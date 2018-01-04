@@ -1,0 +1,20 @@
+EXE_INC = \
+    -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+    -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
+    -I$(CFDEM_SRC_DIR)/eulerian/eulerianFilteredTFM/lnInclude \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/sampling/lnInclude
+
+EXE_LIBS = \
+    -lcompressibleTransportModels \
+    -lincompressibleTransportModels \
+    -lfluidThermophysicalModels \
+    -lspecie \
+    -L$(FOAM_USER_LIBBIN) \
+    -leulerianFilteredTFM \
+    -lfiniteVolume \
+    -lfvOptions \
+    -lmeshTools \
+    -lsampling
