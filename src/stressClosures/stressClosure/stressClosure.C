@@ -163,7 +163,7 @@ tmp<volScalarField> Foam::StressClosure::pPrime() const
         (
             IOobject
             (
-                "nuEff."+phase_.name(),
+                "pPrime_."+phase_.name(),
                 phase_.mesh().time().timeName(),
                 phase_.mesh(),
                 IOobject::NO_READ,

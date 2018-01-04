@@ -49,6 +49,7 @@ stressClosures/stressSubClosures/molecularStress/molecularStress.C
 stressClosures/stressSubClosures/SarkarMicro/SarkarMicro.C
 stressClosures/stressSubClosures/SarkarMeso/SarkarMeso.C
 stressClosures/stressSubClosures/CloeteFrictional/CloeteFrictional.C
+stressClosures/stressSubClosures/BoyerFrictional/BoyerFrictional.C
 stressClosures/stressSubClosures/SchneiderbauerFrictional/SchneiderbauerFrictional.C
 
 eqnClosures/eqnClosure/eqnClosure.C

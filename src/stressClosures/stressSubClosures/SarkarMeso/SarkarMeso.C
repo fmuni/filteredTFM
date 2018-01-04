@@ -141,15 +141,15 @@ namespace Foam
                         / deltaAlpha;
 
      //evaluate anisotropic component
-      aSigma()[celli].x() =  -1./3. * 2.6 * pPrime()[celli]
+      aSigma()[celli].xx() =  -1./3. * 2.6 * pPrime()[celli]
                               / phase_.rho()[celli]
                               * pow (
                                       1.0 - min(phase_[celli] / phase_.alphaMax(),1.0) +TOL ,
                                       1.2
                                     );
 
-      aSigma()[celli].z() = aSigma()[celli].x();
-      aSigma()[celli].y() = -2.*aSigma()[celli].x();
+      aSigma()[celli].zz() = aSigma()[celli].xx();
+      aSigma()[celli].yy() = -2.*aSigma()[celli].xx();
 
     }
 

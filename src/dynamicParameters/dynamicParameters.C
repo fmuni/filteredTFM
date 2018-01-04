@@ -228,6 +228,26 @@ Foam::DynamicParameters::strainRate( const phaseModel& phase
     return  Sr_;
 }
 
+Foam::tmp<volSymmTensorField>
+Foam::DynamicParameters::relAniTensor( const phaseModel& phase,
+                                       const vector& aCoeffs
+                                    ) const
+{
+
+    volVectorField dirU      = phase.U()/mag(phase.U()) ;
+    volVectorField dirCurlU  =   fvc::curl(phase.U())
+                       / mag(
+                              fvc::curl(phase.U())
+                            );
+    volVectorField dirGrad  = dirCurlU ^ dirU / mag(dirCurlU ^ dirU);
+
+    return  symm(
+                aCoeffs.x() * dirU*dirU
+             +  aCoeffs.y() * dirGrad*dirGrad
+             +  aCoeffs.z() * dirCurlU*dirCurlU
+    );
+}
+
 double Foam::DynamicParameters::gValue() const
 {
   return mag(fluid_.g()).value();

@@ -161,6 +161,10 @@ namespace Foam
     //-Get strain rate
     const volScalarField& strainRate(const phaseModel& phase) const;
 
+    //-Get anisotropic relative reference tensor field
+    tmp<volSymmTensorField> relAniTensor( const phaseModel& phase,
+                                            const vector& aCoeffs) const;
+
     //-Return gravity value
     double gValue() const;
 
