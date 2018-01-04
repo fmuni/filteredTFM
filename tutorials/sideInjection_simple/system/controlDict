@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     twoPhaseEulerFoam;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         5;
+
+deltaT          1e-3;
+
+writeControl   adjustableRunTime;
+
+writeInterval   5e-2;
+
+purgeWrite      200;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression compressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  yes;
+
+maxCo           0.65;
+
+maxDeltaT       1e-02;
+
+functions
+{
+    fieldAverage1
+    {
+        type            fieldAverage;
+        libs ( "libfieldFunctionObjects.so" );
+        writeControl    writeTime;
+        fields
+        (
+            U.particles
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+
+            U.air
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+
+            alpha.particles
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+
+            p
+            {
+                 mean        on;
+                 prime2Mean  off;
+                 base        time;
+            }
+        );
+    }
+}
+
+
+// ************************************************************************* //

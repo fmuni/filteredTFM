@@ -1,0 +1,133 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dispersed
+{
+    diameterModel constant;
+    constantCoeffs
+    {
+        d               3e-4;
+    }
+
+    alphaMax        0.62;
+    residualAlpha   1e-6;
+
+    stressClosure
+    {
+        mesoScale
+        {
+            type  SarkarMeso;
+            phase dispersed;
+        }
+
+        frictional
+        {
+            type SchneiderbauerFrictional;
+
+            //Parameters for SchneiderbauerFrictional
+            I0      0.297;
+            muSt    0.3819;
+            muC     0.6435;
+        }
+
+        microScale
+        {
+            type SarkarMicro;
+        }
+    }
+
+}
+
+continuous
+{
+    diameterModel constant;
+    constantCoeffs
+    {
+        d               1;
+    }
+
+    residualAlpha   0;
+
+    stressClosure
+    {
+        mesoScale
+        {
+            type  SarkarMeso;
+            phase continuous;
+        }
+
+        microScale
+        {
+            type molecular;
+        }
+    }
+
+}
+
+
+drag
+{
+       microscopicDragLaw
+       {
+        type            GidaspowErgunWenYu;
+        residualRe      1e-3;
+       }
+
+       heterogeneousCorrection
+       {
+        type        SchneiderbauerPirker;
+       }
+ 
+}
+
+
+heatTransfer
+{
+      microscopicNusselt
+      {
+        type            RanzMarshall;
+        residualAlpha   1e-3;
+      }
+
+      heterogeneousCorrection
+      {
+       type        none;
+      }
+
+}
+
+equations
+{
+
+}
+
+dynamicParameters
+{
+  //Speed up calculations with constant cell size
+  constantFilterSize;
+
+  //Quantities used in correlations
+  referenceFilterSize            1e-4;
+
+  //Settling drag law for terminal velocity
+  settlingDrag Stokes;
+}
+
+// Minimum allowable pressure
+pMin            10000;
+
+
+// ************************************************************************* //
