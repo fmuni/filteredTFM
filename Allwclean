@@ -1,0 +1,13 @@
+#!/bin/sh
+
+_mwd="$(pwd)"
+
+#Build core library
+cd src
+wclean
+cd $_mwd
+
+#Build applications
+cd applications/solvers/eulerianFTFM
+wclean
+cd $_mwd

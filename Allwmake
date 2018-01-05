@@ -1,0 +1,13 @@
+#!/bin/sh
+
+_mwd="$(pwd)"
+
+#Build core library
+cd src
+wmake libso
+cd $_mwd
+
+#Build applications
+cd applications/solvers/eulerianFTFM
+wmake
+cd $_mwd

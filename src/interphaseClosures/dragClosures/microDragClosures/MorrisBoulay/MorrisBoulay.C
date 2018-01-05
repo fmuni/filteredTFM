@@ -69,10 +69,10 @@ Foam::tmp<Foam::volScalarField> Foam::microDragClosures::MorrisBoulay::CdRe() co
     return
         (6.0)
        *(
-            pair_.dispersed().residualAlpha()
+            pair_.dispersed()
             /
             pow(
-                 (pair_.continuous().residualAlpha()),
+                 (pair_.continuous()),
                   alphaFit_
                )
         );
