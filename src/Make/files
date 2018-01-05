@@ -13,6 +13,7 @@ $(dragMicroClosures)/SchillerNaumann/SchillerNaumann.C
 $(dragMicroClosures)/SyamlalOBrien/SyamlalOBrien.C
 $(dragMicroClosures)/WenYu/WenYu.C
 $(dragMicroClosures)/IshiiZuber/IshiiZuber.C
+$(dragMicroClosures)/MorrisBoulay/MorrisBoulay.C
 
 
 HDragCorrections=interphaseClosures/dragClosures/HDragCorrections
