@@ -147,9 +147,10 @@ double Foam::DynamicParameters::deltaFNoConstant(int celli,int dim) const
  return pow(fluid_.mesh().V()[celli],1./3.);
 }
 
-const Foam::volScalarField& Foam::DynamicParameters::getProcessedField(
-                                                         volScalarField& baseField,
-                                                         word operationName
+const Foam::volScalarField&
+Foam::DynamicParameters::getProcessedField(
+                                             volScalarField& baseField,
+                                             word operationName
 ) const
 {
   if(operationName == "none")
@@ -157,7 +158,9 @@ const Foam::volScalarField& Foam::DynamicParameters::getProcessedField(
 
   for(unsigned int id=0;id<filteredFieldsScalar_.size();id++)
   {
-    if( (baseField.name()+ "." + operationName) == filteredFieldsScalar_[id]->name())
+    if( (baseField.name()+ "." + operationName)
+           == filteredFieldsScalar_[id]->name()
+      )
      return (*filteredFieldsScalar_[id]);
   }
 
@@ -187,8 +190,8 @@ const Foam::volScalarField& Foam::DynamicParameters::getProcessedField(
 }
 
 void Foam::DynamicParameters::createOperationField(
-                                                         volScalarField& baseField,
-                                                         word operationName
+                                                     volScalarField& baseField,
+                                                     word operationName
 ) const
 {
   if(operationName=="none")
@@ -233,13 +236,36 @@ Foam::DynamicParameters::relAniTensor( const phaseModel& phase,
                                        const vector& aCoeffs
                                     ) const
 {
+    //Define tolerances
+    dimensionedScalar Utol("Utol",
+                           dimensionSet(0,1,-1,0,0,0,0),
+                           1e-16
+                          );
 
-    volVectorField dirU      = phase.U()/mag(phase.U()) ;
+    dimensionedScalar GradUtol("GradUtol",
+                                dimensionSet(0,0,-1,0,0,0,0),
+                                1e-16
+                               );
+
+    volVectorField dirU      = phase.U()
+                              /
+                              max( mag(phase.U()) ,Utol ) ;
+
     volVectorField dirCurlU  =   fvc::curl(phase.U())
-                       / mag(
-                              fvc::curl(phase.U())
-                            );
-    volVectorField dirGrad  = dirCurlU ^ dirU / mag(dirCurlU ^ dirU);
+                                /
+                                max(
+                                     mag(
+                                          fvc::curl(phase.U())
+                                      ),
+                                      GradUtol
+                                   );
+
+    volVectorField dirGrad  = dirCurlU ^ dirU
+                              /
+                              max(
+                                   mag(dirCurlU ^ dirU),
+                                   GradUtol.value()
+                               );
 
     return  symm(
                 aCoeffs.x() * dirU*dirU

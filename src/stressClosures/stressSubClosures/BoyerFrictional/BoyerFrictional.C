@@ -76,7 +76,7 @@ namespace Foam
  void BoyerFrictional::correct()
  {
 
-     volScalarField        A(phase_/phiMax_ - 1.0 +TOL);
+     volScalarField        A(phiMax_/(phase_ + TOL) - 1.0 );
      volScalarField        invA(1.0/A);
      volScalarField        muf(phase_.fluid().otherPhase(phase_).mu());
      volSymmTensorField    relRefAT(markers().relAniTensor(phase_,aLambda_));
@@ -90,9 +90,8 @@ namespace Foam
 
      aSigma() = relRefAT *
              (
-               muf * markers().strainRate(phase_) * invA * invA
+               muf / phase_.rho() * markers().strainRate(phase_) * invA * invA
              ) ;
-
 
  }
 }

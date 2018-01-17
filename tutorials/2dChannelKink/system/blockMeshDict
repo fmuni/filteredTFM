@@ -1,0 +1,120 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 0.1;
+
+Yrefinement simpleGrading (1 0.2 1);
+
+vertices #codeStream
+{
+    codeInclude
+    #{
+        #include "pointField.H"
+    #};
+
+    code
+    #{
+        //Geometric parameters
+        scalar kinkLength(0.8);    //Restriction block length
+        scalar kinkHeight(0.1);    //Restriction block height
+        scalar kinkWidth(0.001);   //Restriction block width
+        scalar inOutLength(0.05);   //In/Out regularization
+        //Calculate points
+        pointField points(8);
+
+        scalar kinkStartx(-kinkLength/2.);
+        scalar kinkEndx(kinkLength/2.);
+        scalar domainStartx(kinkStartx - inOutLength);
+        scalar domainEndx(kinkEndx + inOutLength);
+
+        points[0] = point( kinkStartx,          0., -kinkWidth );
+        points[1] = point( kinkEndx,          0., -kinkWidth );
+        points[2] = point( kinkEndx,  kinkHeight, -kinkWidth );
+        points[3] = point( kinkStartx,  kinkHeight, -kinkWidth );
+        points[4] = point( domainStartx,        0., -kinkWidth );
+        points[5] = point( domainStartx,  kinkHeight, -kinkWidth );
+        points[6] = point( domainEndx,        0., -kinkWidth );
+        points[7] = point( domainEndx,  kinkHeight, -kinkWidth );
+
+        //Duplicate on z
+        label sizeP = points.size();
+        points.setSize(2*sizeP);
+        for(label i=0; i<sizeP; i++)
+        {
+            const point& pt = points[i];
+            points[i+sizeP] = point(pt.x(),pt.y(),-pt.z());
+        }
+
+        os << points;
+    #};
+
+};
+
+blocks
+(
+    hex (0 1 2 3 8 9 10 11) (160 20 1) $Yrefinement //simpleGrading (1 1 1)
+    hex (4 0 3 5 12 8 11 13) (10 20 1) $Yrefinement //simpleGrading (1 1 1)
+    hex (1 6 7 2 9 14 15 10) (10 20 1) $Yrefinement //simpleGrading (1 1 1)
+);
+
+edges
+(
+    arc  2 3 ( 0 0.05 -0.001)
+    arc  10 11 ( 0 0.05  0.001)
+
+);
+
+patches
+(
+    patch inlet
+    (
+        ( 4 5 13 12)
+    )
+
+    patch outlet
+    (
+        ( 6 14 15 7)
+    )
+
+    wall walls
+    (
+        (5 3 11 13)
+        (3 2 10 11)
+        (2 7 15 10)
+    )
+
+    symmetryPlane symm
+    (
+        (0 8 9 1)
+        (4 12 8 0)
+        (1 9 6 14)
+    )
+    empty frontAndBackPlanes
+    (
+        (0 1 2 3)
+        (8 11 10 9)
+        (4 0 3 5)
+        (12 13 11 8)
+        (1 6 7 2)
+        (9 10 15 14)
+    )
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //
