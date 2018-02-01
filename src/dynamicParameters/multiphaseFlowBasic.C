@@ -87,8 +87,8 @@ multiphaseFlowBasic::setupSettling( double dP,
     settling.Tref = settling.u / g;
     settling.Lref = settling.u*settling.u / g;
     settling.FrP  = settling.u*settling.u / g / dP;
-    settling.Lchar = settling.Lref * pow(settling.FrP, -0.5);
-    settling.Lchar2= settling.Lref * pow(settling.FrP, -0.666666666667);
+    settling.Lchar = settling.Lref * pow(max(settling.FrP,1e-32), -0.5);
+    settling.Lchar2= settling.Lref * pow(max(settling.FrP,1e-32), -0.666666666667);
     settling.FrPf = settling.u*settling.u / g / filterSize;
 
     if(verbose_)
@@ -152,7 +152,7 @@ scalar cDStokes;
 scalar F(0.0);
 
 u     = uInit;
-Re    = ReInit;
+Re    = max(ReInit,1e-32);
 
 while(relError > 1.0e-6)
 {
@@ -196,13 +196,16 @@ multiphaseFlowBasic::F_Beetstra
             double Re
           )
 {
-    double F;
-    F    = 10. * phiP / (1.-phiP) / (1.-phiP)
-           + (1.-phiP)*(1.-phiP) * (1+1.5*sqrt(phiP))
-           +  0.413 * Re / 24. / sqr(1-phiP)
-            *( 1./(1.-phiP) + 3.0 * phiP * (1-phiP) + 8.4 * pow(Re,-0.343) )
-            /( 1. + pow(10.,3.*phiP) * pow(Re,-(1.+4.*phiP)/2.) );
+    double F(0.);
 
+    if(Re>1e-32)
+    {
+       F    = 10. * phiP / (1.-phiP) / (1.-phiP)
+            + (1.-phiP)*(1.-phiP) * (1+1.5*sqrt(phiP))
+            +  0.413 * Re / 24. / sqr(1-phiP)
+             *( 1./(1.-phiP) + 3.0 * phiP * (1-phiP) + 8.4 * pow(Re,-0.343) )
+             /( 1. + pow(10.,3.*phiP) * pow(Re,-(1.+4.*phiP)/2.) );
+    }
     return F;
 }; //end function
 

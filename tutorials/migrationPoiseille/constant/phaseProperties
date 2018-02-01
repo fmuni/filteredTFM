@@ -1,0 +1,139 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//Rename phases with case-appropriate names
+setPhaseNames
+{
+    dispersed  particles;
+    continuous fluid;
+}
+
+//Write fields
+writeInternalFields;
+
+particles
+{
+    //Particles are glass beads
+    diameterModel constant;
+    constantCoeffs
+    {
+        d               1;
+    }
+
+    alphaMax        0.75;
+    residualAlpha   1e-6;
+
+    stressClosure
+    {
+        mesoScale
+        {
+            type  none;
+        }
+
+        frictional
+        {
+            type  BoyerFrictional;
+
+        }
+
+        microScale
+        {
+          type none;
+        }
+    }
+
+}
+
+fluid
+{
+    diameterModel constant;
+    constantCoeffs
+    {
+        d               1;
+    }
+
+    residualAlpha   0;
+
+    stressClosure
+    {
+        mesoScale
+        {
+            type  none; //SarkarMeso;
+        }
+
+        microScale
+        {
+            type molecular;
+        }
+    }
+
+}
+
+
+drag
+{
+       microscopicDragLaw
+       {
+         type            MorrisBoulay;
+        residualRe      1e-3;
+       }
+
+       heterogeneousCorrection
+       {
+        type    none;
+       }
+
+}
+
+
+heatTransfer
+{
+      microscopicNusselt
+      {
+        type            RanzMarshall;
+        residualAlpha   1e-3;
+      }
+
+      heterogeneousCorrection
+      {
+       type        none;
+      }
+
+}
+
+equations
+{
+
+}
+
+dynamicParameters
+{
+  //Speed up calculations with constant cell size
+  constantFilterSize;
+
+  //Quantities used in correlations
+  referenceFilterSize            1e-4;
+
+  //Settling drag law for terminal velocity
+  settlingDrag Stokes;
+}
+
+// Minimum allowable pressure
+pMin            10000;
+
+
+// ************************************************************************* //
