@@ -23,27 +23,24 @@ boundaryField
 
     inlet
     {
-//        type            fixedProfile;
+        type            fixedProfile;
 
-//        profile         polynomial
-//        (
-//            ((1.0 0 0)    (0 0 0))
-//            ((-0.012345 0 0)    (2 0 0))
-//        );
-//        direction       (0 1 0);
-//        origin          9;
-
-        type cyclic;
+        profile         polynomial
+        (
+            ((1.0 0 0)    (0 0 0))
+            ((-0.012345 0 0)    (2 0 0))
+        );
+        direction       (0 1 0);
+        origin          9;
 
 
     }
 
     outlet
     {
-//       type               inletOutlet;
-//        value              $internalField;
-//        phi                phi.fluid;
-        type cyclic;
+       type               inletOutlet;
+        value              $internalField;
+        phi                phi.fluid;
         inletValue              $internalField;
 
     }
@@ -51,13 +48,12 @@ boundaryField
     "walls"
     {
         type            fixedValue;
-        value           uniform (0 0 0);
+        value           uniform (0 0 0)
     }
 
     "symm.*"
     {
-//        type symmetryPlane;
-        type empty;
+        type symmetryPlane;
     }
 
 }

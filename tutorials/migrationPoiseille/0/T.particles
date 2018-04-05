@@ -16,33 +16,26 @@ FoamFile
 
 dimensions          [0 0 0 1 0 0 0];
 
-internalField       uniform 600;
+internalField       uniform 0;
 
 boundaryField
 {
-    inlet
-    {
-        type               zeroGradient;
-    }
-
-    outlet
-    {
-        type               inletOutlet;
-        phi                phi.particles;
-        inletValue         uniform 600;
-        value              uniform 600;
-    }
-
     "walls"
     {
-        type               zeroGradient;
+        type               calculated;
+        value              $internalField;
+    }
+    
+    "inlet|outlet"
+    {
+        type cyclic;
     }
 
     "symm.*"
     {
-        type symmetryPlane;
+//        type symmetryPlane;
+        type empty;
     }
-
 
 }
 

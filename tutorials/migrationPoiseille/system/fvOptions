@@ -14,7 +14,7 @@ FoamFile
     object      fvOptions;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-/*
+
 option1
 {
     type            meanVelocityForce;
@@ -22,9 +22,9 @@ option1
     selectionMode   all;                    // Apply force to all cells
     fields          (U.fluid);                    // Name of velocity field
     Ubar            (1 0 0);             // Desired mean velocity
-    relaxation      0.1;                    // Optional relaxation factor
+    relaxation      0.3;                    // Optional relaxation factor
 
 }
-*/
+
 
 //************************************************************************* //

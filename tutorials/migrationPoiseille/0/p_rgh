@@ -22,26 +22,29 @@ boundaryField
 {
     inlet
     {
-        type            fixedFluxPressure;
+//        type            fixedFluxPressure;
+        type cyclic;
         value           $internalField;
     }
 
     outlet
     {
-        type            prghPressure;
-        p               $internalField;
+//        type            prghPressure;
+//        p               $internalField;
+        type cyclic;
         value           $internalField;
     }
 
     "walls"
     {
-        type            fixedFluxPressure;
+        type            zeroGradient;
         value           $internalField;
     }
 
     "symm.*"
     {
-        type symmetryPlane;
+//        type symmetryPlane;
+        type empty;
     }
 
 

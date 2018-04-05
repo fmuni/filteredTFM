@@ -23,26 +23,29 @@ boundaryField
     "walls"
     {
         type               zeroGradient;
-        value              $internalField;
+ //       value              $internalField;
     }
 
     "outlet"
     {
-        type               inletOutlet;
-        phi                phi.particles;
-        inletValue         uniform 0;
-        value              uniform 0;
+//        type               inletOutlet;
+//        phi                phi.particles;
+//        inletValue         uniform 0;
+        type cyclic;
+//        value              $internalField;
     }
 
     "inlet"
     {
-        type      fixedValue;
-        value 0.3;
+//        type      fixedValue;
+        type cyclic;
+//        value $internalField;
     }
 
     "symm.*"
     {
-        type symmetryPlane;
+//        type symmetryPlane;
+        type empty;
     }
 }
 
