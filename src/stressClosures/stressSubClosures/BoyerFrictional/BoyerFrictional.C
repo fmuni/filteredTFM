@@ -82,7 +82,7 @@ namespace Foam
      volSymmTensorField    relRefAT(markers().relAniTensor(phase_,aLambda_));
 
 
-     nuPrime() = muf / phase_.rho() *
+     nu() = muf / phase_.rho() *
               (
                    invA* 5.0/2.0 * phiMax_
                 +  invA*invA*(mu1_ + (mu2_ - mu1_)/(1.0+I0_*invA*invA ))

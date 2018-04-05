@@ -64,7 +64,8 @@ Foam::microDragClosures::MorrisBoulay::~MorrisBoulay()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::tmp<Foam::volScalarField> Foam::microDragClosures::MorrisBoulay::CdRe() const
+Foam::tmp<Foam::volScalarField> 
+Foam::microDragClosures::MorrisBoulay::CdRe() const
 {
     return
         (6.0)

@@ -114,10 +114,10 @@ namespace Foam
     Y_reg =  b_ * diam[celli];
     Y_reg =  2.0 * mui * phase_.rho()[celli] * Y_reg * Y_reg * Sr[celli] + TOL;
 
-    nuPrime()[celli] = regularizeExp(X_reg, Y_reg, muMax_)
+    nu()[celli] = regularizeExp(X_reg, Y_reg, muMax_)
                      * Y_reg / X_reg / phase_.rho()[celli]; //must return the KINEMATIC viscosity!
 //    Info << "pPrime()[" << celli << "]: " << pPrime()[celli] 
-//         << ", nuPrime()[" << celli << "]: " << nuPrime()[celli] 
+//         << ", nu()[" << celli << "]: " << nu()[celli] 
 //         << ", X_reg: " << X_reg
 //         << ", Sr[celli]: " << Sr[celli]
 //         << endl;

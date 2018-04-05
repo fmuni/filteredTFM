@@ -60,13 +60,13 @@ namespace Foam
 //Memory allocation methods
 void StressSubClosure::createViscosity(word closureName)
 {
-  nuPrimePtr_.set
+  nuPtr_.set
   (
     new volScalarField
     (
         IOobject
         (
-            "nuPrime."+phase_.name() + "-" + closureName,
+            "nu."+phase_.name() + "-" + closureName,
             phase_.U().mesh().time().timeName(),
             phase_.U().mesh(),
             IOobject::NO_READ,
@@ -105,13 +105,13 @@ void StressSubClosure::createPressure(word closureName)
 void StressSubClosure::createLambda(word closureName)
 {
 
-     lambdaPrimePtr_.set
+     lambdaPtr_.set
      (
        new volScalarField
        (
            IOobject
            (
-               "lambdaPrime."+phase_.name()+ "-" + closureName,
+               "lambda."+phase_.name()+ "-" + closureName,
                phase_.U().mesh().time().timeName(),
                phase_.U().mesh(),
                IOobject::NO_READ,
@@ -163,28 +163,28 @@ void StressSubClosure::checkAutoPtr(word property, bool empty) const
 }
 
 
-const volScalarField& StressSubClosure::nuPrime() const
+const volScalarField& StressSubClosure::nu() const
 {
-    checkAutoPtr("Viscosity",nuPrimePtr_.empty());
-    return nuPrimePtr_();
+    checkAutoPtr("Viscosity",nuPtr_.empty());
+    return nuPtr_();
 }
 
-volScalarField& StressSubClosure::nuPrime()
+volScalarField& StressSubClosure::nu()
 {
-    checkAutoPtr("Viscosity",nuPrimePtr_.empty());
-    return nuPrimePtr_();
+    checkAutoPtr("Viscosity",nuPtr_.empty());
+    return nuPtr_();
 }
 
-const volScalarField&  StressSubClosure::lambdaPrime() const
+const volScalarField&  StressSubClosure::lambda() const
 {
-    checkAutoPtr("Lambda",lambdaPrimePtr_.empty());
-    return lambdaPrimePtr_();
+    checkAutoPtr("Lambda",lambdaPtr_.empty());
+    return lambdaPtr_();
 }
 
-volScalarField&  StressSubClosure::lambdaPrime()
+volScalarField&  StressSubClosure::lambda()
 {
-    checkAutoPtr("Lambda",lambdaPrimePtr_.empty());
-    return lambdaPrimePtr_();
+    checkAutoPtr("Lambda",lambdaPtr_.empty());
+    return lambdaPtr_();
 }
 
 const volSymmTensorField&  StressSubClosure::aSigma() const
@@ -215,7 +215,7 @@ Foam::tmp<Foam::volScalarField>
 StressSubClosure::k() const
 {
     NotImplemented;
-    return nuPrime();
+    return nu();
 }
 
 
@@ -223,7 +223,7 @@ Foam::tmp<Foam::volScalarField>
 StressSubClosure::epsilon() const
 {
     NotImplemented;
-    return nuPrime();
+    return nu();
 }
 
 Foam::tmp<Foam::volSymmTensorField>
@@ -260,15 +260,15 @@ StressSubClosure::R(volVectorField& U) const
     volSymmTensorField& Rt = tmpRt.ref();
 
     //Add viscous component to tensor if valid viscosity
-    if(nuPrimePtr_.valid())
+    if(nuPtr_.valid())
     {
-     Rt -=  (nuPrime())*dev(twoSymm(fvc::grad(U)));
+     Rt -=  (nu())*dev(twoSymm(fvc::grad(U)));
   ;  }
 
     //Add compressible component to tensor if valid compressible viscosity
-    if(lambdaPrimePtr_.valid())
+    if(lambdaPtr_.valid())
     {
-     Rt -=  (lambdaPrime()*fvc::div(phi))*symmTensor::I;
+     Rt -=  (lambda()*fvc::div(phi))*symmTensor::I;
     }
 
     //Add anisotropic component if available
@@ -332,9 +332,9 @@ StressSubClosure::divDevRhoReff
     Eq += fvc::div(devRhoReff(U)());
 
     //Add laplacian if valid viscosity
-    if(nuPrimePtr_.valid())
+    if(nuPtr_.valid())
     {
-     Eq -= fvm::laplacian(phase_.rho()*nuPrime(), U);
+     Eq -= fvm::laplacian(phase_.rho()*nu(), U);
     }
 
     return tmpEq;
@@ -342,8 +342,8 @@ StressSubClosure::divDevRhoReff
 
 void StressSubClosure::updateNu(volScalarField& nu) const
 {
-    if(nuPrimePtr_.valid())
-     nu += nuPrime();
+    if(nuPtr_.valid())
+     nu += StressSubClosure::nu();
 }
 
 void StressSubClosure::updateP(volScalarField& p) const
@@ -360,8 +360,8 @@ void StressSubClosure::updatePf(surfaceScalarField& pf) const
 
 void StressSubClosure::updateLambda(volScalarField& lambda) const
 {
-    if(lambdaPrimePtr_.valid())
-     lambda += lambdaPrime();
+    if(lambdaPtr_.valid())
+     lambda += StressSubClosure::lambda();
 }
 
 void StressSubClosure::updateASigma(volSymmTensorField& ASigma) const
@@ -377,11 +377,11 @@ const DynamicParameters& StressSubClosure::markers() const
 
 void StressSubClosure::writeFields() const
 {
-  if(nuPrimePtr_.valid())
-   nuPrime().write();
+  if(nuPtr_.valid())
+   nu().write();
 
-  if(lambdaPrimePtr_.valid())
-   lambdaPrime().write();
+  if(lambdaPtr_.valid())
+   lambda().write();
 
   if(pPrimePtr_.valid())
    pPrime().write();

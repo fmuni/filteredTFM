@@ -111,7 +111,7 @@ namespace Foam
       if(phase_[celli] <  phase_.residualAlpha().value() )
       {
          pPrime()[celli] = pPrime()[celli]*0.;
-         nuPrime()[celli] =  nuPrime()[celli]*0.;
+         nu()[celli] =  nu()[celli]*0.;
          aSigma()[celli] = aSigma()[celli]*0.;
          continue;
 
@@ -134,7 +134,7 @@ namespace Foam
                         / deltaAlpha;
 
       //evaluate viscosity
-      nuPrime()[celli] =  Cnu
+      nu()[celli] =  Cnu
                         * pow(markers().filterSize(celli,DIMENSIONAL),12./7.)
                         * Sr[celli]
                         * pow(fabs(phase_[celli])+TOL,1.123)
@@ -155,7 +155,7 @@ namespace Foam
 
    //Apply smoothing to zero in case of dilute particle phase
    smoothToZero(pPrime());
-   smoothToZero(nuPrime());
+   smoothToZero(nu());
    smoothToZero(aSigma());
 
 
@@ -187,7 +187,7 @@ namespace Foam
  /*    if(phase_[celli] > ( scalar(1) - phase_.fluid().otherPhase(phase_).residualAlpha().value() ) )
      {
        pPrime()[celli] = pPrime()[celli]*0.;
-       nuPrime()[celli] =  nuPrime()[celli]*0.;
+       nu()[celli] =  nu()[celli]*0.;
        continue;
 
      }
@@ -205,7 +205,7 @@ namespace Foam
                           );
 
       //evaluate viscosity
-      nuPrime()[celli] =  pow(markers().filterSize(celli,DIMENSIONAL),2)
+      nu()[celli] =  pow(markers().filterSize(celli,DIMENSIONAL),2)
                         * Sr[celli]
                         * (
                               0.0330
@@ -217,7 +217,7 @@ namespace Foam
     }
 
     smoothToZero(pPrime());
-    smoothToZero(nuPrime());
+    smoothToZero(nu());
 
  }
 

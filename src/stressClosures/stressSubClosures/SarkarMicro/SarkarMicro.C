@@ -100,7 +100,7 @@ namespace Foam
                         / deltaAlpha;
 
        //evaluate viscosity
-       nuPrime()[celli] =  Cnu
+       nu()[celli] =  Cnu
                          * pow(markers().filterSize(celli,DIMENSIONAL),8.0/7.0)
                          * Sr[celli]
                          * pow(max(phase_[celli],0.),1.544)
@@ -110,7 +110,7 @@ namespace Foam
 
        //Apply smoothing to zero in case of dilute particle phase
        smoothToZero(pPrime());
-       smoothToZero(nuPrime());
+       smoothToZero(nu());
 
 
  }

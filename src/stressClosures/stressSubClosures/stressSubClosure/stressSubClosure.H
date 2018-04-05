@@ -49,13 +49,13 @@ namespace Foam
    dictionary              settings_;
 
    //-Closure viscosity
-   autoPtr<volScalarField>        nuPrimePtr_;
+   autoPtr<volScalarField>        nuPtr_;
 
    //-Closure phase-pressure
    autoPtr<volScalarField>         pPrimePtr_;
 
    //-Closure bulk viscosity
-   autoPtr<volScalarField>    lambdaPrimePtr_;
+   autoPtr<volScalarField>    lambdaPtr_;
 
    //-Anisotropic contribution to R (diagonal elements only)
    autoPtr<volSymmTensorField>     aSigmaPtr_;
@@ -72,16 +72,16 @@ namespace Foam
    void checkAutoPtr(word property,bool empty) const;
 
    //- Return the effective viscosity
-   const volScalarField& nuPrime() const;
+   const volScalarField& nu() const;
 
    //- Return the effective viscosity (non const)
-   volScalarField& nuPrime();
+   volScalarField& nu();
 
    //- Return the bulk viscosity
-   const volScalarField&  lambdaPrime() const;
+   const volScalarField&  lambda() const;
 
    //- Return the bulk viscosity (non-const)
-   volScalarField&  lambdaPrime();
+   volScalarField&  lambda();
 
 
    //- Return the anisotropic stress tensor

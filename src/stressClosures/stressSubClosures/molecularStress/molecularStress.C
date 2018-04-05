@@ -48,7 +48,7 @@ namespace Foam
  {
    //viscosity is the molecular viscosity
    createViscosity(typeName_());
-   nuPrime() = phase_.nu();
+   nu() = phase_.nu();
 
  };
 //-------------------------- Destructors ----------------------------------//
