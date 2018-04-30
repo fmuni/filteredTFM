@@ -24,7 +24,7 @@ solvers
 
         smoothLimiter   0.1;
 
-        implicitPhasePressure yes;
+        implicitPhasePressure no;
         solver          GAMG;
         smoother        symGaussSeidel;
         tolerance       1e-9;
@@ -35,7 +35,7 @@ solvers
     p_rgh
     {
         solver          PCG;
-        preconditioner	        DIC;
+        preconditioner	DIC;
         tolerance       1e-8;
         relTol          0.1;
         maxIter         25;
@@ -61,23 +61,11 @@ PIMPLE
     
     residualControl
     {
-        "U.*"
-        {
-                tolerance  1e-5;
-                relTol      0;
-        }
-        "p_rgh"
-        {
-                tolerance  1e-5;
-                relTol      0;
-        }
-        "alpha.*"
-        {
-                tolerance  1e-5;
-                relTol      0;
-        }
+        p_rgh           1e-6;
+        "U.*"           1e-6;
+        "alpha.*"       1e-6;
+    }
 
-     }
 }
 
 relaxationFactors
