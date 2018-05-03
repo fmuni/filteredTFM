@@ -37,7 +37,7 @@ Contributors
 
 using namespace Foam;
 //-------------------------- Constructors ---------------------------------//
-Foam::DynamicParameters::DynamicParameters( const twoPhaseSystem&             fluid,
+Foam::DynamicParameters::DynamicParameters( const twoPhaseSystem&        fluid,
                                             dictionary   auxEquationsDict
                                           )
 :
@@ -227,7 +227,9 @@ Foam::DynamicParameters::strainRate( const phaseModel& phase
                                     ) const
 {
     //TODO: the update should be in a separate function!
-    Sr_ = sqrt(2.) * mag(symm(fvc::grad(phase.U())));
+    
+    Sr_ = sqrt(2.)*mag(dev(symm(fvc::grad(phase.U()))));
+
     return  Sr_;
 }
 
@@ -259,8 +261,14 @@ Foam::DynamicParameters::relAniTensor( const phaseModel& phase,
                                       ),
                                       GradUtol
                                    );
-
-    volVectorField dirGrad  = dirCurlU ^ dirU
+    
+    //- It does not make any sense to evaluate the direction of the
+    //  velocity gradient since it is a rank 2 tensor.
+    //  However, a similar direction is required by some closures.
+    //  Therefore, we define such direction to be perpendicular to both 
+    //  dirU and curlU.
+    
+    volVectorField dirGrad  =  dirCurlU ^ dirU
                               /
                               max(
                                    mag(dirCurlU ^ dirU),

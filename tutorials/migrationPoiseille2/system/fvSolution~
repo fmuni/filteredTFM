@@ -9,56 +9,63 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U.particles;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
-
-internalField   uniform (0 0 0);
-
-boundaryField
+solvers
 {
-
-    inlet
+    "alpha.*"
     {
-       //type zeroGradient;
-/*        type            fixedProfile;
+        nAlphaCorr      1;
+        nAlphaSubCycles 2;
 
-        profile         polynomial
-        (
-            ((1.0 0 0)    (0 0 0))
-            ((-0.012345 0 0)    (2 0 0))
-        );
-        direction       (0 1 0);
-        origin          9;
-*/
-        type cyclic;
-   }
+        smoothLimiter   0.1;
 
-    outlet
-    {
-/*       type               inletOutlet;
-        value              $internalField;
-        phi                phi.particles;
-        inletValue              $internalField;
-*/
-        type cyclic;
+        implicitPhasePressure yes;
+        solver          GAMG;
+        smoother        symGaussSeidel;
+        tolerance       1e-9;
+        relTol          0;
+        minIter         1;
     }
 
-    "walls"
+    p_rgh
     {
-        type             slip;
+        solver          GAMG;
+        smoother        DIC;
+        tolerance       1e-8;
+        relTol          0;
+        maxIter         12;
     }
 
-    "symm.*"
+    p_rghFinal
     {
-//        type symmetryPlane;
-        type empty;
+        $p_rgh;
+        relTol          0;
     }
 
 
 }
+
+PIMPLE
+{
+    nOuterCorrectors    5;
+    nCorrectors         1;
+    nNonOrthogonalCorrectors 0;
+    pRefCell 0;
+    pRefValue 0;
+}
+
+relaxationFactors
+{
+    equations
+    {
+        ".*"            1;
+    }
+}
+
 
 // ************************************************************************* //

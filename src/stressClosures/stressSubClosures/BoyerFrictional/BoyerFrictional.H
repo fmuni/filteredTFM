@@ -26,6 +26,13 @@ License
 
 Contributors
     Federico Municchi, Purdue University, 2018
+    
+Description
+    Frictional stress model proposed by Boyer et al. (2011).
+    Here the anisotropic pressure is decomposed into hydrostatic (pPrime)
+    and deviatoric (aSigma) components.
+    Notice that for the hydrostatic pressure, only the derivative with respect
+    to the phase field is required.
 \*---------------------------------------------------------------------------*/
 
 #ifndef BoyerFrictional_H

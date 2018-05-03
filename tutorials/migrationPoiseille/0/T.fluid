@@ -29,6 +29,7 @@ boundaryField
     "inlet|outlet"
     {
         type cyclic;
+//        type zeroGradient;
     }
 
     "symm.*"

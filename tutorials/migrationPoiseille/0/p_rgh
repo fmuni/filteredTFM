@@ -32,12 +32,12 @@ boundaryField
 //        type            prghPressure;
 //        p               $internalField;
         type cyclic;
-        value           $internalField;
+//        value           $internalField;
     }
 
     "walls"
     {
-        type            zeroGradient;
+        type            fixedFluxPressure;
         value           $internalField;
     }
 

@@ -59,6 +59,7 @@ namespace Foam
     {
         createViscosity(typeName_());
         createASigma(typeName_());
+        createPressure(typeName_());
     }
     else
     {
@@ -81,16 +82,30 @@ namespace Foam
      volScalarField        muf(phase_.fluid().otherPhase(phase_).mu());
      volSymmTensorField    relRefAT(markers().relAniTensor(phase_,aLambda_));
 
+   
 
      nu() = muf / phase_.rho() *
               (
                    invA* 5.0/2.0 * phiMax_
                 +  invA*invA*(mu1_ + (mu2_ - mu1_)/(1.0+I0_*invA*invA ))
               );
-
-     aSigma() = relRefAT *
+    
+     //- Pressure treatment: we split into deviatoric and hydrostatic.
+     //  As usual, only the phase derivative of the hydrostatic part
+     //  is required.
+     
+     //- Deviatoric pressure is given with positive sign because
+     //  this tensor is added to the LHS of the equation     
+     aSigma() = dev(relRefAT) *
              (
                muf / phase_.rho() * markers().strainRate(phase_) * invA * invA
+             ) ;
+    
+     //- phase_ derivative of the hydrostatic part 
+     pPrime() = (1./3.)*tr(relRefAT)*
+             (
+               muf  * markers().strainRate(phase_)
+               * scalar(2)*phiMax_*phase_/pow(phiMax_-phase_+TOL,3)
              ) ;
 
  }

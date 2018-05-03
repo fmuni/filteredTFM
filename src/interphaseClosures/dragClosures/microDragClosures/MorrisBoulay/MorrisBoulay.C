@@ -68,13 +68,13 @@ Foam::tmp<Foam::volScalarField>
 Foam::microDragClosures::MorrisBoulay::CdRe() const
 {
     return
-        (6.0)
+        (6.)
        *(
             pair_.dispersed()
             /
             pow(
                  (pair_.continuous()),
-                  alphaFit_
+                 alphaFit_ - scalar(1) //See Donstov & Pierce (2014)
                )
         );
 }

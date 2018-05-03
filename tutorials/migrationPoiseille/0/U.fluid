@@ -23,16 +23,17 @@ boundaryField
 
     inlet
     {
-//        type            fixedProfile;
+/*        type            fixedProfile;
 
-//        profile         polynomial
-//        (
-//            ((1.0 0 0)    (0 0 0))
-//            ((-0.012345 0 0)    (2 0 0))
-//        );
-//        direction       (0 1 0);
-//        origin          9;
+        profile         polynomial
+        (
+            ((1.0 0 0)    (0 0 0))
+            ((-0.012345 0 0)    (2 0 0))
+        );
+        direction       (0 1 0);
+        origin          9;
 
+*/
         type cyclic;
 
 
@@ -40,11 +41,12 @@ boundaryField
 
     outlet
     {
-//       type               inletOutlet;
-//        value              $internalField;
-//        phi                phi.fluid;
-        type cyclic;
+/*       type               inletOutlet;
+        value              $internalField;
+        phi                phi.fluid;
         inletValue              $internalField;
+*/
+        type cyclic;
 
     }
 

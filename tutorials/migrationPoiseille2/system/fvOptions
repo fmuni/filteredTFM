@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  4.x                                   |
+|  \\    /   O peration     | Version:  5                                     |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -9,35 +9,22 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      T.particles;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-dimensions          [0 0 0 1 0 0 0];
-
-internalField       uniform 0;
-
-boundaryField
+/*
+option1
 {
-    "walls"
-    {
-        type               calculated;
-        value              $internalField;
-    }
-    
-    "inlet|outlet"
-    {
-        type cyclic;
-//        type               zeroGradient;
-    }
+    type            meanVelocityForce;
 
-    "symm.*"
-    {
-//        type symmetryPlane;
-        type empty;
-    }
+    selectionMode   all;                    // Apply force to all cells
+    fields          (U.fluid);                    // Name of velocity field
+    Ubar            (1 0 0);             // Desired mean velocity
+    relaxation      0.3;                    // Optional relaxation factor
 
 }
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+*/
+//************************************************************************* //

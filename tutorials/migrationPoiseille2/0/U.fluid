@@ -10,7 +10,7 @@ FoamFile
     version     2.0;
     format      ascii;
     class       volVectorField;
-    object      U.particles;
+    object      U.fluid;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -23,8 +23,7 @@ boundaryField
 
     inlet
     {
-       //type zeroGradient;
-/*        type            fixedProfile;
+        type            fixedProfile;
 
         profile         polynomial
         (
@@ -33,23 +32,26 @@ boundaryField
         );
         direction       (0 1 0);
         origin          9;
-*/
-        type cyclic;
-   }
+
+//        type cyclic;
+
+
+    }
 
     outlet
     {
-/*       type               inletOutlet;
+       type               inletOutlet;
         value              $internalField;
-        phi                phi.particles;
+        phi                phi.fluid;
+//        type cyclic;
         inletValue              $internalField;
-*/
-        type cyclic;
+
     }
 
     "walls"
     {
-        type             slip;
+        type            fixedValue;
+        value           uniform (0 0 0);
     }
 
     "symm.*"
@@ -57,7 +59,6 @@ boundaryField
 //        type symmetryPlane;
         type empty;
     }
-
 
 }
 

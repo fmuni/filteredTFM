@@ -16,7 +16,7 @@ FoamFile
 
 dimensions          [0 0 0 0 0 0 0];
 
-internalField       uniform 5e-02;
+internalField       uniform 0.3;
 
 boundaryField
 {
@@ -28,10 +28,11 @@ boundaryField
 
     "outlet"
     {
+        type cyclic;   
 //        type               inletOutlet;
 //        phi                phi.particles;
 //        inletValue         uniform 0;
-        type cyclic;
+
 //        value              $internalField;
     }
 
@@ -39,7 +40,7 @@ boundaryField
     {
 //        type      fixedValue;
         type cyclic;
-//        value $internalField;
+        value uniform 0.3;
     }
 
     "symm.*"

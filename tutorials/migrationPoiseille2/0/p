@@ -9,47 +9,29 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U.particles;
+    class       volScalarField;
+    object      p;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions          [1 -1 -2 0 0 0 0];
 
-internalField   uniform (0 0 0);
+internalField       uniform 0;
 
 boundaryField
 {
-
-    inlet
-    {
-       //type zeroGradient;
-/*        type            fixedProfile;
-
-        profile         polynomial
-        (
-            ((1.0 0 0)    (0 0 0))
-            ((-0.012345 0 0)    (2 0 0))
-        );
-        direction       (0 1 0);
-        origin          9;
-*/
-        type cyclic;
-   }
-
-    outlet
-    {
-/*       type               inletOutlet;
-        value              $internalField;
-        phi                phi.particles;
-        inletValue              $internalField;
-*/
-        type cyclic;
-    }
-
     "walls"
     {
-        type             slip;
+        type               calculated;
+        value              $internalField;
+    }
+    
+    "inlet|outlet"
+    {
+//        type cyclic;
+        type               calculated;
+        value              $internalField;
+ 
     }
 
     "symm.*"
@@ -57,8 +39,6 @@ boundaryField
 //        type symmetryPlane;
         type empty;
     }
-
-
 }
 
-// ************************************************************************* //
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

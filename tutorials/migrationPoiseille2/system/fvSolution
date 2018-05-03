@@ -19,14 +19,14 @@ solvers
 {
     "alpha.*"
     {
-        nAlphaCorr      1;
-        nAlphaSubCycles 3;
+        nAlphaCorr      5;
+        nAlphaSubCycles 2;
 
-        smoothLimiter   0.1;
+//        smoothLimiter   0.1;
 
         implicitPhasePressure yes;
-        solver          PCG;
-        preconditioner	DIC;
+        solver          GAMG;
+        smoother        symGaussSeidel;
         tolerance       1e-10;
         relTol          0;
         minIter         1;
@@ -37,8 +37,8 @@ solvers
         solver          PCG;
         preconditioner	DIC;
         tolerance       1e-10;
-        relTol          1e-05;
-        maxIter         50;
+        relTol          1e-03;
+        maxIter         1000;
     }
 
     p_rghFinal
@@ -47,33 +47,23 @@ solvers
         relTol          0;
         maxIter 1000;
     }
-    
-    "U.*"
-    {
-        solver          GAMG;
-        smoother        GaussSeidel;
-        tolerance       1e-5;
-        relTol          0;
-        minIter         1;
-    }
-
 
 
 }
 
 PIMPLE
 {
-    nOuterCorrectors    5;
-    nCorrectors         3;
+    nOuterCorrectors    10;
+    nCorrectors         10;
     nNonOrthogonalCorrectors 0;
     pRefCell 0;
     pRefValue 0;
     
     residualControl
     {
-        p_rgh           1e-5;
-        "U.*"           1e-5;
- //       "alpha.*"       1e-3;
+        p_rgh           1e-8;
+        "U.*"           1e-8;
+        "alpha.*"       1e-8;
     }
 
 }
@@ -83,10 +73,10 @@ relaxationFactors
     equations
     {
 
-         "U.fluid|U.particles"  0.5;        
+         "U.fluid|U.particles|alpha.fluid|alpha.particles"  0.5;        
          p_rgh        0.2;
 
-         "(U.fluid|U.particles)Final"  1;
+         "(U.fluid|U.particles|alpha.fluid|alpha.particles)Final"  1;
          p_rghFinal 1;
     }
 }

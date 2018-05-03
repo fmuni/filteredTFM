@@ -15,7 +15,7 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 convertToMeters 1;
 
-Hx  3;
+Hx  80;
 Hy  18;
 Hz  1;
 
@@ -36,7 +36,7 @@ vertices
 
 blocks
 (
-  hex (v0 v1 v2 v3 v4 v5 v6 v7) (3 40 1 )  simpleGrading (1 1 1)
+  hex (v0 v1 v2 v3 v4 v5 v6 v7) (100 20 1 )  simpleGrading (50 1 1)
 );
 
 edges
@@ -57,17 +57,17 @@ boundary
 
     inlet
     {
-//        type      patch;
-        type    cyclic;
-        neighbourPatch outlet;
+        type      patch;
+//        type    cyclic;
+//        neighbourPatch outlet;
         faces   ((v0 v3 v7 v4));
     }
 
     outlet
     {
-//        type      patch;
-        type    cyclic;
-        neighbourPatch inlet;
+        type      patch;
+//        type    cyclic;
+//        neighbourPatch inlet;
         faces   ((v1 v5 v6 v2));
     }
 

@@ -29,6 +29,9 @@ boundaryField
     "inlet|outlet"
     {
         type cyclic;
+//        type               calculated;
+//        value              $internalField;
+ 
     }
 
     "symm.*"

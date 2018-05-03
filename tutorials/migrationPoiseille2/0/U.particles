@@ -24,7 +24,7 @@ boundaryField
     inlet
     {
        //type zeroGradient;
-/*        type            fixedProfile;
+        type            fixedProfile;
 
         profile         polynomial
         (
@@ -33,18 +33,16 @@ boundaryField
         );
         direction       (0 1 0);
         origin          9;
-*/
-        type cyclic;
+//        type cyclic;
    }
 
     outlet
     {
-/*       type               inletOutlet;
+       type               inletOutlet;
         value              $internalField;
         phi                phi.particles;
         inletValue              $internalField;
-*/
-        type cyclic;
+//        type cyclic;
     }
 
     "walls"

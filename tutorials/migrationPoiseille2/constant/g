@@ -9,35 +9,14 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      T.particles;
+    class       uniformDimensionedVectorField;
+    location    "constant";
+    object      g;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions          [0 0 0 1 0 0 0];
+dimensions      [0 1 -2 0 0 0 0];
+value           (0 0 -9.81);
 
-internalField       uniform 0;
 
-boundaryField
-{
-    "walls"
-    {
-        type               calculated;
-        value              $internalField;
-    }
-    
-    "inlet|outlet"
-    {
-        type cyclic;
-//        type               zeroGradient;
-    }
-
-    "symm.*"
-    {
-//        type symmetryPlane;
-        type empty;
-    }
-
-}
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// ************************************************************************* //
