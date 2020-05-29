@@ -1,8 +1,8 @@
-eulerianFilteredTFM
+filteredTFM
 ==
 A filtered Two Fluid Model library and solver for OpenFOAM®
 
-This eulerianFilteredTFM is a derivative work of the same library included in [CFDEMcoupling](https://www.cfdem.com/cfdemcoupling), which has been developed within the 
+This filteredTFM is a derivative work of the eulerianFilteredTFM library included in [CFDEMcoupling](https://www.cfdem.com/cfdemcoupling), which has been developed within the 
 [NanoSim Project](http://sintef.no/NanoSim) project by DCS Computing GmbH (Linz, Austria) and 
 Graz University of Technology (F. Municchi, S. Radl).
 
