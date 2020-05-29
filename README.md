@@ -15,7 +15,7 @@ Copyright Notice
 
 All rights reserved.
 
-Note that some modules (or files) within the eulerianFilteredTFM package are not under the copyright of the above copyright holders. These modules (or files) are included in the eulerianFilteredTFM package with a valid open-source license. Please see the text in the source files, or the corresponding sub-directory, for more detailed information on copyright and the license that applies for these files.
+Note that some modules (or files) within the filteredTFM package are not under the copyright of the above copyright holders. These modules (or files) are included in the filteredTFM package with a valid open-source license. Please see the text in the source files, or the corresponding sub-directory, for more detailed information on copyright and the license that applies for these files.
 
 License
 -----------------
@@ -23,12 +23,12 @@ See the [LICENSE.md](LICENSE.md) file for details.
 
 Warranty
 -----------------
-eulerianFilteredTFM is distributed in the hope that it will be applied and further developed by researchers and engineerings in academia or industry. However, eulerianFilteredTFM comes without any warranty, without even the implied warranty of merchantability or fitness for a particular purpose. 
+filteredTFM is distributed in the hope that it will be applied and further developed by researchers and engineerings in academia or industry. However, filteredTFM comes without any warranty, without even the implied warranty of merchantability or fitness for a particular purpose. 
 
 
 Scope
 ---------------------------------------
-__eulerianFilteredTFM__ is a C++ library based on the open source finite
+__filteredTFM__ is a C++ library based on the open source finite
  volume library OpenFOAM® developed to solve the three dimensional unsteady spatially averaged Euler-Euler equations that describe a two phase system composed of
  a continuous phase (fluid) and a dispersed phase (solid particles).
 
