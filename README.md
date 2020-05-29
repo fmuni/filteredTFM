@@ -6,6 +6,8 @@ This eulerianFilteredTFM is a derivative work of the same library included in [C
 [NanoSim Project](http://sintef.no/NanoSim) project by DCS Computing GmbH (Linz, Austria) and 
 Graz University of Technology (F. Municchi, S. Radl).
 
+__This repository has a [detailed Wiki page](https://github.com/fmuni/filteredTFM/wiki). Please refer to that for usage and installation instructions.__
+
 Copyright Notice
 ------------------
 
@@ -33,6 +35,3 @@ __eulerianFilteredTFM__ is a C++ library based on the open source finite
 The library features several closures for the interphase transfer coefficients, the
 phase stress tensor and additional user defined equations.
 
-Important Hints for Usage
------------------
-- This repository has a [detailed Wiki page](https://github.com/fmuni/filteredTFM/wiki). Please refer to that for usage and installation instructions.
