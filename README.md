@@ -6,7 +6,7 @@ This filteredTFM is a derivative work of the eulerianFilteredTFM library include
 [NanoSim Project](http://sintef.no/NanoSim) project by DCS Computing GmbH (Linz, Austria) and 
 Graz University of Technology (F. Municchi, S. Radl).
 
-__This repository has a [detailed Wiki page](https://github.com/fmuni/filteredTFM/wiki). Please refer to that for usage and installation instructions.__
+__This repository has a [nice and detailed Wiki page](https://github.com/fmuni/filteredTFM/wiki)! Please refer to that for usage and installation instructions.__
 
 Copyright Notice
 ------------------
