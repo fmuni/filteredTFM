@@ -2,7 +2,7 @@ filteredTFM
 ==
 A filtered Two Fluid Model library and solver for OpenFOAM®
 
-This filteredTFM library is a derivative work of the eulerianFilteredTFM library included in [CFDEMcoupling](https://www.cfdem.com/cfdemcoupling), which has been developed within the 
+This eulerianFilteredTFM library is a derivative work of the eulerianFilteredTFM library included in [CFDEMcoupling](https://www.cfdem.com/cfdemcoupling), which has been developed within the 
 [NanoSim Project](http://sintef.no/NanoSim) project by DCS Computing GmbH (Linz, Austria) and 
 Graz University of Technology (F. Municchi, S. Radl).
 
@@ -15,7 +15,7 @@ Copyright Notice
 
 All rights reserved.
 
-Note that some modules (or files) within the filteredTFM package are not under the copyright of the above copyright holders. These modules (or files) are included in the filteredTFM package with a valid open-source license. Please see the text in the source files, or the corresponding sub-directory, for more detailed information on copyright and the license that applies for these files.
+Note that some modules (or files) within the eulerianFilteredTFM package are not under the copyright of the above copyright holders. These modules (or files) are included in the eulerianFilteredTFM package with a valid open-source license. Please see the text in the source files, or the corresponding sub-directory, for more detailed information on copyright and the license that applies for these files.
 
 License
 -----------------
@@ -23,12 +23,12 @@ See the [LICENSE.md](LICENSE.md) file for details.
 
 Warranty
 -----------------
-filteredTFM is distributed in the hope that it will be applied and further developed by researchers and engineerings in academia or industry. However, filteredTFM comes without any warranty, without even the implied warranty of merchantability or fitness for a particular purpose. 
+eulerianFilteredTFM is distributed in the hope that it will be applied and further developed by researchers and engineerings in academia or industry. However, filteredTFM comes without any warranty, without even the implied warranty of merchantability or fitness for a particular purpose. 
 
 
 Scope
 ---------------------------------------
-__filteredTFM__ is a C++ library based on the open source finite
+__eulerianFilteredTFM__ is a C++ library based on the open source finite
  volume library OpenFOAM® developed to solve the three dimensional unsteady spatially averaged Euler-Euler equations that describe a two phase system composed of
  a continuous phase (fluid) and a dispersed phase (solid particles).
 
