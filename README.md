@@ -2,7 +2,7 @@ eulerianFilteredTFM
 ==
 A filtered Two Fluid Model library and solver for OpenFOAM®
 
-eulerianFilteredTFM is part of CFDEMcoupling, and has been developed within the 
+This eulerianFilteredTFM is a derivative work of the same library included in [CFDEMcoupling](https://www.cfdem.com/cfdemcoupling), which has been developed within the 
 [NanoSim Project](http://sintef.no/NanoSim) project by DCS Computing GmbH (Linz, Austria) and 
 Graz University of Technology (F. Municchi, S. Radl).
 
@@ -35,6 +35,4 @@ phase stress tensor and additional user defined equations.
 
 Important Hints for Usage
 -----------------
-- eulerianFilteredTFM is integrated in a CFDEMcoupling package. You should find appropriate solvers and test cases in the 'applications/solvers/' and 'tutorials' folders of your CFDEMcoupling package.
-- compilation works similar as for CFDEMcoupling. For installation instructions, see 'doc/INSTALL.md'
-- a detailed documentation of the whole eulerianFilteredTFM package is available in the 'doc' subfolder.
+- This repository has a [detailed Wiki page](https://github.com/fmuni/filteredTFM/wiki). Please refer to that for usage and installation instructions.
