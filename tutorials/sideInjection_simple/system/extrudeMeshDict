@@ -34,14 +34,14 @@ flipNormals false;
 //- Linear extrusion in point-normal direction
 extrudeModel        linearNormal;
 
-nLayers             15;
+nLayers             45;
 
 expansionRatio      1.0;    //0.9;
 
 
 linearNormalCoeffs
 {
-    thickness       0.35;
+    thickness       1.15;
 }
 
 // Do front and back need to be merged? Usually only makes sense for 360

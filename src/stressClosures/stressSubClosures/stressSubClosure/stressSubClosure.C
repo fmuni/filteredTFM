@@ -36,50 +36,47 @@ Contributors
 namespace Foam
 {
 
- defineTypeNameAndDebug(StressSubClosure, 0);
+defineTypeNameAndDebug(StressSubClosure, 0);
 
- defineRunTimeSelectionTable(StressSubClosure, dictionary);
+defineRunTimeSelectionTable(StressSubClosure, dictionary);
 //-------------------------- Constructors ---------------------------------//
- StressSubClosure::StressSubClosure(
-                                  const dictionary&          dict,
-                                  phaseModel&               phase
-                                 )
- :
- phase_(phase),
- settings_(dict),
- phaseThreshold_(settings_.lookupOrDefault("dispersedPhaseThreshold",0.005)),
- dispersedPhase_(phase.fluid().phase1())
- {
- };
+StressSubClosure::StressSubClosure
+(
+  const dictionary&          dict,
+  phaseModel&               phase
+)
+:
+phase_(phase),
+settings_(dict),
+phaseThreshold_(settings_.lookupOrDefault("dispersedPhaseThreshold",0.005)),
+dispersedPhase_(phase.fluid().phase1())
+{};
+
 //-------------------------- Destructors ----------------------------------//
- StressSubClosure::~StressSubClosure()
- {
- };
+StressSubClosure::~StressSubClosure()
+{
+};
 //---------------------------   Methods  ----------------------------------//
 
 //Memory allocation methods
 void StressSubClosure::createViscosity(word closureName)
 {
-  nuPtr_.set
-  (
-    new volScalarField
+    nuPtr_.set
     (
-        IOobject
+        new volScalarField
         (
-            "nu."+phase_.name() + "-" + closureName,
-            phase_.U().mesh().time().timeName(),
+            IOobject
+            (
+                "nu."+phase_.name() + "-" + closureName,
+                phase_.U().mesh().time().timeName(),
+                phase_.U().mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
             phase_.U().mesh(),
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        phase_.U().mesh(),
-        dimensionedScalar("0",
-                           dimensionSet(0,2,-1,0,0,0,0),
-                           0.0
-                          )
-    )
-
-  );
+            dimensionedScalar("0",dimViscosity,scalar(0))
+        )
+    );
 }
 
 void StressSubClosure::createPressure(word closureName)
@@ -153,13 +150,13 @@ void StressSubClosure::createASigma(word closureName)
 
 void StressSubClosure::checkAutoPtr(word property, bool empty) const
 {
-  if(empty)
-  {
-    FatalError << property << " was not allocated in "
-             << "StressSubClosure " << typeName_()
-             << " for phase " << phase_.name() << "\n"
-             << "It seems like the class was not coded properly...";
-  }
+    if(empty)
+    {
+        FatalError << property << " was not allocated in "
+                 << "StressSubClosure " << typeName_()
+                 << " for phase " << phase_.name() << "\n"
+                 << "It seems like the class was not coded properly...";
+    }
 }
 
 
@@ -229,13 +226,13 @@ StressSubClosure::epsilon() const
 Foam::tmp<Foam::volSymmTensorField>
 StressSubClosure::R() const
 {
-  return R(phase_.U());
+    return R(phase_.U());
 }
 
 Foam::tmp<Foam::volSymmTensorField>
 StressSubClosure::R(volVectorField& U) const
 {
-  const surfaceScalarField&   phi = phase_.phi();
+    const surfaceScalarField&   phi = phase_.phi();
 
     tmp<volSymmTensorField> tmpRt
     (
@@ -250,10 +247,12 @@ StressSubClosure::R(volVectorField& U) const
                 IOobject::NO_WRITE
             ),
             phase_.U().mesh(),
-            dimensionedSymmTensor("R",
-                                   dimensionSet(0,2,-2,0,0,0,0),
-                                   symmTensor::zero
-                                 )
+            dimensionedSymmTensor
+            (
+                "R",
+                dimensionSet(0,2,-2,0,0,0,0),
+                symmTensor::zero
+            )
         )
     );
 
@@ -262,19 +261,19 @@ StressSubClosure::R(volVectorField& U) const
     //Add viscous component to tensor if valid viscosity
     if(nuPtr_.valid())
     {
-     Rt -=  (nu())*dev(twoSymm(fvc::grad(U)));
-  ;  }
+        Rt -=  (nu())*dev(twoSymm(fvc::grad(U)));
+    }
 
     //Add compressible component to tensor if valid compressible viscosity
     if(lambdaPtr_.valid())
     {
-     Rt -=  (lambda()*fvc::div(phi))*symmTensor::I;
+        Rt -=  (lambda()*fvc::div(phi))*symmTensor::I;
     }
 
     //Add anisotropic component if available
     if(aSigmaPtr_.valid())
     {
-     Rt +=  aSigma();
+        Rt +=  aSigma();
     }
 
     return tmpRt;
@@ -324,7 +323,7 @@ StressSubClosure::divDevRhoReff
 
     Foam::tmp<Foam::fvVectorMatrix> tmpEq
     (
-      new fvVectorMatrix(U,dimensionSet(1,1,-2,0,0,0,0))
+        new fvVectorMatrix(U,dimensionSet(1,1,-2,0,0,0,0))
     );
 
     fvVectorMatrix& Eq = tmpEq.ref();
@@ -334,7 +333,7 @@ StressSubClosure::divDevRhoReff
     //Add laplacian if valid viscosity
     if(nuPtr_.valid())
     {
-     Eq -= fvm::laplacian(phase_.rho()*nu(), U);
+        Eq -= fvm::laplacian(phase_.rho()*nu(), U);
     }
 
     return tmpEq;
@@ -343,52 +342,69 @@ StressSubClosure::divDevRhoReff
 void StressSubClosure::updateNu(volScalarField& nu) const
 {
     if(nuPtr_.valid())
-     nu += StressSubClosure::nu();
+    {
+        nu += StressSubClosure::nu();
+    }
 }
 
 void StressSubClosure::updateP(volScalarField& p) const
 {
     if(pPrimePtr_.valid())
-     p += pPrime();
+    {
+        p += pPrime();
+    }
 }
 
 void StressSubClosure::updatePf(surfaceScalarField& pf) const
 {
     if(pPrimePtr_.valid())
-     pf += pPrimef();
+    {
+        pf += pPrimef();
+    }
 }
 
 void StressSubClosure::updateLambda(volScalarField& lambda) const
 {
     if(lambdaPtr_.valid())
-     lambda += StressSubClosure::lambda();
+    {
+        lambda += StressSubClosure::lambda();
+    }
 }
 
 void StressSubClosure::updateASigma(volSymmTensorField& ASigma) const
 {
     if(aSigmaPtr_.valid())
-     ASigma += aSigma();
+    {
+        ASigma += aSigma();
+    }
 }
 
 const DynamicParameters& StressSubClosure::markers() const
 {
-  return phase_.fluid().dynPar();
+    return phase_.fluid().dynPar();
 }
 
 void StressSubClosure::writeFields() const
 {
   if(nuPtr_.valid())
-   nu().write();
+  {
+      nu().write();
+  }
 
   if(lambdaPtr_.valid())
-   lambda().write();
+  {
+      lambda().write();
+  }
 
   if(pPrimePtr_.valid())
-   pPrime().write();
+  {
+      pPrime().write();
+  }
 
   if(aSigmaPtr_.valid())
-   aSigma().write();
+  {
+      aSigma().write();
+  }
+
 }
-
-
 }

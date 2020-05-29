@@ -24,8 +24,7 @@ boundaryField
 {
     inlet.air
     {
-        type              fixedValue;
-        value             $internalField;
+        type              noSlip;
     }
 
     inlet.particles
@@ -34,7 +33,7 @@ boundaryField
          type               fixedValue;
         // inletVelocity      uniform (-0.01 0 0);
        //  alpha              alpha.particles;
-         value              uniform ( $UrecircP 0 0);
+         value              uniform ( -2.0 0 0);
     }
 
     outlet

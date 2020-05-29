@@ -109,17 +109,15 @@ namespace Foam
    template<class T>
    void smoothToZero(T& field) const
    {
-    //Always based on the particle volume fraction (i.e., phase1)
-    forAll(dispersedPhase_.U(),celli)
-    {
-       if(dispersedPhase_[celli] < phaseThreshold_)
-       {
-           //Linear smoothing
-           field[celli] = dispersedPhase_[celli]/phaseThreshold_ * field[celli];
-
-       }
-    }
-
+        //Always based on the particle volume fraction (i.e., phase1)
+        forAll(dispersedPhase_.U(),celli)
+        {
+           if(dispersedPhase_[celli] < phaseThreshold_)
+           {
+               //Linear smoothing
+               field[celli] *= (dispersedPhase_[celli]/phaseThreshold_);
+           }
+        }
    }
 
   public:

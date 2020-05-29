@@ -43,7 +43,6 @@ Contributors
 #include "dynamicParameters.H"
 #include "auxEquations.H"
 #include "stressClosure.H"
-//#include "dragClosure.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -52,8 +51,6 @@ namespace Foam
 
 class heatTransferClosure;
 class AuxEquations;
-//class DynamicParameters;
-//class StressClosure;
 class dragClosure;
 
 

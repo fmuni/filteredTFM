@@ -27,7 +27,7 @@ Contributors
     Federico Municchi, TUGraz, 2017
 
 Description
-    This stress model is based on Schneiderbauer et al., 
+    This stress model is based on Schneiderbauer et al.,
     Chem Eng Sci 80(2012), 279–292
 \*---------------------------------------------------------------------------*/
 
@@ -52,7 +52,12 @@ namespace Foam
       //Model coefficients
       scalar I0_,muSt_,muC_,muMax_,pMax_,b_;
 
-      scalar regularizeExp(const scalar& arg1, const scalar& arg2, const scalar& arg3);
+      scalar regularizeExp
+      (
+          const scalar& arg1,
+          const scalar& arg2,
+          const scalar& arg3
+      );
 
 
   public:

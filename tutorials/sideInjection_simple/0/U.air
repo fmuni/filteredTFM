@@ -26,13 +26,13 @@ boundaryField
     inlet.air
     {
         type               fixedValue;
-        value              uniform (0 $Uriser 0);
+        value              uniform (0 8.0 0);
     }
 
      inlet.particles
      {
          type               fixedValue;
-         value              uniform ( $UrecircAir 0 0);
+         value              uniform ( -2.0 0 0);
        //  type               interstitialInletVelocity;
        //  inletVelocity      uniform (-0.01 0 0);
        // alpha              alpha.air;

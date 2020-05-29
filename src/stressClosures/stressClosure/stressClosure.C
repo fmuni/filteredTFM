@@ -32,44 +32,48 @@ Contributors
 using namespace Foam;
 
 //-------------------------- Constructors ---------------------------------//
-Foam::StressClosure::StressClosure(  phaseModel&              phase,
-                                     dictionary         closureDict,
-                                     bool               isDispersed
-                                 )
+Foam::StressClosure::StressClosure
+(
+    phaseModel&              phase,
+    dictionary         closureDict,
+    bool               isDispersed
+)
 :
- phase_(phase),
- settings_(closureDict),
- mesoScaleStressClosure_
- (
-   StressSubClosure::New
-   (
-    settings_.subDict("mesoScale"),
-    phase_,
-    word(settings_.subDict("mesoScale").lookup("type"))
-   )
- ),
- microScaleStressClosure_
- (
-   StressSubClosure::New
-   (
-    settings_.subDict("microScale"),
-    phase_,
-    word(settings_.subDict("microScale").lookup("type"))
-   )
- ),
- isDispersed_(isDispersed)
+phase_(phase),
+settings_(closureDict),
+mesoScaleStressClosure_
+(
+    StressSubClosure::New
+    (
+        settings_.subDict("mesoScale"),
+        phase_,
+        word(settings_.subDict("mesoScale").lookup("type"))
+    )
+),
+microScaleStressClosure_
+(
+    StressSubClosure::New
+    (
+        settings_.subDict("microScale"),
+        phase_,
+        word(settings_.subDict("microScale").lookup("type"))
+    )
+),
+isDispersed_(isDispersed)
 {
-  //Activate frictional just for the particle phase
-  if(isDispersed_)
-  {
-    frictionalStressClosure_ =
-      StressSubClosure::New
-      (
-       settings_.subDict("frictional"),
-       phase_,
-       word(settings_.subDict("frictional").lookup("type"))
-      );
-  }
+    //Activate frictional stress just for the particle phase
+    if(isDispersed_)
+    {
+        frictionalStressClosure_.set
+        (
+            StressSubClosure::New
+            (
+                settings_.subDict("frictional"),
+                phase_,
+                word(settings_.subDict("frictional").lookup("type"))
+            ).ptr()
+        );
+    }
 };
 //-------------------------- Destructors ----------------------------------//
 Foam::StressClosure::~StressClosure()
@@ -82,7 +86,9 @@ void Foam::StressClosure::correct()
       microScaleStressClosure_->correct();
 
       if(frictionalStressClosure_.valid())
-           frictionalStressClosure_->correct();
+      {
+            frictionalStressClosure_->correct();
+      }
 
 }
 
@@ -111,52 +117,77 @@ tmp<volScalarField> Foam::StressClosure::nuEff() const
     microScaleStressClosure_->updateNu(nuEff);
 
     if(isDispersed_)
-     frictionalStressClosure_->updateNu(nuEff);
+    {
+        frictionalStressClosure_->updateNu(nuEff);
+    }
 
     return tmpNuEff;
 }
 
 tmp<volScalarField> Foam::StressClosure::k() const
 {
-  tmp<volScalarField> tmp (  mesoScaleStressClosure_->k()
-                           + microScaleStressClosure_->k()
-                          );
-  if(isDispersed_)
-   tmp = tmp + frictionalStressClosure_->k();
+    tmp<volScalarField> tmpk
+    (
+          mesoScaleStressClosure_->k()
+        + microScaleStressClosure_->k()
+    );
 
-  return tmp;
+    volScalarField& k_ = tmpk.ref();
+
+    if(isDispersed_)
+    {
+        k_ += frictionalStressClosure_->k();
+    }
+
+    return tmpk;
 }
 
 tmp<volScalarField> Foam::StressClosure::muEff() const
 {
- return  phase_.rho()*nuEff();
+    return  phase_.rho()*nuEff();
 }
 
 
 tmp<volScalarField> Foam::StressClosure::epsilon() const
 {
-  tmp<volScalarField> tmp (  mesoScaleStressClosure_->epsilon()
-                           + microScaleStressClosure_->epsilon()
-                          );
-  if(isDispersed_)
-   tmp = tmp + frictionalStressClosure_->epsilon();
+    tmp<volScalarField> tmpepsilon
+    (
+        mesoScaleStressClosure_->epsilon()
+      + microScaleStressClosure_->epsilon()
+    );
 
-  return tmp;
+    volScalarField& epsilon_ = tmpepsilon.ref();
+
+
+    if(isDispersed_)
+    {
+        epsilon_ += frictionalStressClosure_->epsilon();
+    }
+
+    return tmpepsilon;
 }
 
 tmp<volSymmTensorField> Foam::StressClosure::R() const
 {
-  tmp<volSymmTensorField> tmp (  mesoScaleStressClosure_->R()
-                               + microScaleStressClosure_->R()
-                          );
-  if(isDispersed_)
-   tmp = tmp + frictionalStressClosure_->R();
+    tmp<volSymmTensorField> tmpR
+    (
+        mesoScaleStressClosure_->R()
+       + microScaleStressClosure_->R()
+    );
 
-  return tmp;
+    volSymmTensorField& R_ = tmpR.ref();
+
+    if(isDispersed_)
+    {
+        R_ += frictionalStressClosure_->R();
+    }
+
+    return tmpR;
 }
 
 tmp<volScalarField> Foam::StressClosure::pPrime() const
 {
+    //- This is the functional derivatve of the pressure
     tmp<volScalarField> tmpPPrime
     (
         new volScalarField
@@ -169,48 +200,67 @@ tmp<volScalarField> Foam::StressClosure::pPrime() const
                 IOobject::NO_READ,
                 IOobject::NO_WRITE
             ),
-            phase_.U().mesh().lookupObject<volScalarField>("p")*0
+            phase_.mesh(),
+            dimensionedScalar("pPrime",dimPressure,scalar(0))
        )
     );
 
     volScalarField& pPrime = tmpPPrime.ref();
 
-    mesoScaleStressClosure_->updateP(pPrime );
-    microScaleStressClosure_->updateP(pPrime );
+    mesoScaleStressClosure_->updateP(pPrime);
+    microScaleStressClosure_->updateP(pPrime);
 
     if(isDispersed_)
-     frictionalStressClosure_->updateP(pPrime );
+    {
+        frictionalStressClosure_->updateP(pPrime);
+    }
 
     return tmpPPrime;
 }
 
 tmp<volSymmTensorField> Foam::StressClosure::devRhoReff() const
 {
-  tmp<volSymmTensorField> tmp (  mesoScaleStressClosure_->devRhoReff()
-                               + microScaleStressClosure_->devRhoReff()
-                          );
-  if(isDispersed_)
-   tmp = tmp + frictionalStressClosure_->devRhoReff();
+    tmp<volSymmTensorField> tmp
+    (
+          mesoScaleStressClosure_->devRhoReff()
+        + microScaleStressClosure_->devRhoReff()
+    );
 
-  return tmp;
+    volSymmTensorField& fld = tmp.ref();
+    if(isDispersed_)
+    {
+        fld += frictionalStressClosure_->devRhoReff();
+    }
+
+    return tmp;
 }
 
 tmp<fvVectorMatrix> Foam::StressClosure::divDevRhoReff(volVectorField& U) const
 {
-  tmp<fvVectorMatrix> tmp (  mesoScaleStressClosure_->divDevRhoReff(U)
-                               + microScaleStressClosure_->divDevRhoReff(U)
-                          );
-  if(isDispersed_)
-   tmp = tmp + frictionalStressClosure_->divDevRhoReff(U);
+    tmp<fvVectorMatrix> tmp
+    (
+        mesoScaleStressClosure_->divDevRhoReff(U)
+      + microScaleStressClosure_->divDevRhoReff(U)
+    );
 
-  return tmp;
+    fvVectorMatrix& vmat = tmp.ref();
+
+    if(isDispersed_)
+    {
+        vmat += frictionalStressClosure_->divDevRhoReff(U);
+    }
+
+    return tmp;
 }
 
 void Foam::StressClosure::writeFields() const
 {
-  mesoScaleStressClosure_->writeFields();
-  microScaleStressClosure_->writeFields();
+    mesoScaleStressClosure_->writeFields();
+    microScaleStressClosure_->writeFields();
 
-  if(isDispersed_)
-   frictionalStressClosure_->writeFields();
+    if(isDispersed_)
+    {
+        frictionalStressClosure_->writeFields();
+    }
+
 }

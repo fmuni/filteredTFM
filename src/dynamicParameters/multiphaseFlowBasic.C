@@ -62,64 +62,69 @@ multiphaseFlowBasic::~multiphaseFlowBasic()
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 void
-multiphaseFlowBasic::setupSettling( double dP,
-                                    double rhoP,
-                                    double g,
-                                    double etaFluid,
-                                    double rhoFluid,
-                                    word   dragLaw,
-                                    double filterSize
-                                  )
+multiphaseFlowBasic::setupSettling
+(
+    scalar dP,
+    scalar rhoP,
+    scalar g,
+    scalar etaFluid,
+    scalar rhoFluid,
+    word   dragLaw,
+    scalar filterSize
+)
 {
     //Calculate the settling velocity of an isolated particle
     uSettlingSphereSuspension
-                        (
-                           dP,
-                           rhoP,
-                           g,
-                           etaFluid,
-                           rhoFluid,
-                           0,
-                           dragLaw,
-                           settling.u,
-                           settling.Re
-                        );
+    (
+        dP,
+        rhoP,
+        g,
+        etaFluid,
+        rhoFluid,
+        0,
+        dragLaw,
+        settling.u,
+        settling.Re
+    );
+
     settling.Tref = settling.u / g;
     settling.Lref = settling.u*settling.u / g;
     settling.FrP  = settling.u*settling.u / g / dP;
-    settling.Lchar = settling.Lref * pow(max(settling.FrP,1e-32), -0.5);
-    settling.Lchar2= settling.Lref * pow(max(settling.FrP,1e-32), -0.666666666667);
+    settling.Lchar = settling.Lref * pow(max(settling.FrP,small), -0.5);
+    settling.Lchar2= settling.Lref * pow(max(settling.FrP,small), -2.0/3.0);
     settling.FrPf = settling.u*settling.u / g / filterSize;
 
     if(verbose_)
     {
-        Info << "\n *** Settling properties have been set up ***" << endl;
-        Info << "  u:      " << settling.u << tab << "[m/s]" << endl;
-        Info << "  Re:     " << settling.Re << endl;
-        Info << "  Tref:   " << settling.Tref << tab << "[s]" << endl;
-        Info << "  Lref:   " << settling.Lref << tab << "[m]" << endl;
-        Info << "  FrP:    " << settling.FrP << endl;
-        Info << "  Lchar:  " << settling.Lchar << tab << "[m]" <<  endl;
-        Info << "  Lchar2: " << settling.Lchar2 << tab << "[m]" <<  endl << endl;
+        Info<< "\n *** Settling properties have been set up ***" << endl;
+        Info<< "  u:      " << settling.u << tab << "[m/s]" << endl;
+        Info<< "  Re:     " << settling.Re << endl;
+        Info<< "  Tref:   " << settling.Tref << tab << "[s]" << endl;
+        Info<< "  Lref:   " << settling.Lref << tab << "[m]" << endl;
+        Info<< "  FrP:    " << settling.FrP << endl;
+        Info<< "  Lchar:  " << settling.Lchar << tab << "[m]" <<  endl;
+        Info<< "  Lchar2: " << settling.Lchar2 << tab << "[m]" <<  endl
+            << endl;
     }
+
     return;
-}; //end function
+};
 
 
 
 void
 multiphaseFlowBasic::uSettlingSphereSuspension
-                        (
-                           double dP,
-                           double rhoP,
-                           double g,
-                           double etaFluid,
-                           double rhoFluid,
-                           double phiP,
-                           word   dragLaw,
-                           double &u,
-                           double &Re
-                          )
+(
+    scalar dP,
+    scalar rhoP,
+    scalar g,
+    scalar etaFluid,
+    scalar rhoFluid,
+    scalar phiP,
+    word   dragLaw,
+    scalar &u,
+    scalar &Re
+)
 {
 //uSettlingSphere - Calculates the Settling Velocity of a sphere in a
 //homogeneous suspension
@@ -141,83 +146,82 @@ multiphaseFlowBasic::uSettlingSphereSuspension
 //   u        settling velocity
 //   Re       Reynolds number
 
+    //init with stokes settling velocity
+    scalar uInit(dP * dP * (rhoP-rhoFluid) *g / (18. * etaFluid));
+    scalar ReInit(fabs(uInit) * dP * rhoFluid / etaFluid);
 
-scalar uInit  = dP * dP * (rhoP-rhoFluid) *g / (18 * etaFluid); //init with stokes settling velocity
-scalar ReInit = fabs(uInit) * dP * rhoFluid / etaFluid;
+    scalar relError(1.);
+    scalar uOld(0.0);
+    uOld = uInit;
+    scalar cDStokes;
+    scalar F(0.0);
 
-scalar relError = 1.0;
-scalar uOld(0.0);
-uOld = uInit;
-scalar cDStokes;
-scalar F(0.0);
+    u     = uInit;
+    Re    = max(ReInit,small);
 
-u     = uInit;
-Re    = max(ReInit,1e-32);
-
-while(relError > 1.0e-6)
-{
-
-    // Calculate the drag coefficient
-    cDStokes = 24/ Re; //Stokes drag coefficient
-    if(dragLaw=="WenYu")      // Wen-Yu Drag law
-        F = F_WenYu(    phiP, Re );
-    else if(dragLaw=="Beetstra")
-        F = F_Beetstra( phiP, Re );
-    else if(dragLaw=="KochHill")
-        F = F_KochHill( phiP, Re );
-    else if(dragLaw=="Stokes")
-        F = 1.;
-    else
+    while(relError > 1.0e-6)
     {
-       FatalError << "No valid drag law is specified in dynamic parameters\n"
-                  << "Valid drag laws are: " << dragLaws_;
+
+        // Calculate the drag coefficient
+        cDStokes = 24./ Re; //Stokes drag coefficient
+        if(dragLaw=="WenYu")      // Wen-Yu Drag law
+        {
+            F = F_WenYu(phiP,Re);
+        }
+        else if(dragLaw=="Beetstra")
+        {
+            F = F_Beetstra(phiP,Re );
+        }
+        else if(dragLaw=="KochHill")
+        {
+            F = F_KochHill(phiP,Re);
+        }
+        else if(dragLaw=="Stokes")
+        {
+            F = 1.;
+        }
+        else
+        {
+            FatalError<< "No valid drag law is specified in dynamic parameters\n"
+                      << "Valid drag laws are: " << dragLaws_;
+        }
+
+        u    = sqrt( 4./3. * fabs(rhoP-rhoFluid) * g * dP
+                / ( cDStokes * (1.-phiP) * F * rhoFluid  )
+                 );
+
+        Re  = (1.-phiP) * fabs(u) * dP * rhoFluid  / etaFluid;
+
+        relError = fabs(uOld - u);
+        uOld = u;
+
     }
 
-    u    = sqrt( 4./3. * fabs(rhoP-rhoFluid) * g * dP
-            / ( cDStokes * (1.-phiP) * F * rhoFluid  )
-             );
-
-    Re  = (1.-phiP) * fabs(u) * dP * rhoFluid  / etaFluid;
-
-    relError = fabs(uOld - u);
-    uOld = u;
-
-}
-
- return;
+    return;
 
 }; //end function
 
 
-double
-multiphaseFlowBasic::F_Beetstra
-          (
-            double phiP,
-            double Re
-          )
+scalar multiphaseFlowBasic::F_Beetstra(scalar phiP,scalar Re)
 {
-    double F(0.);
+    scalar F(0.);
 
     if(Re>1e-32)
     {
-       F    = 10. * phiP / (1.-phiP) / (1.-phiP)
+        F = 10. * phiP / (1.-phiP) / (1.-phiP)
             + (1.-phiP)*(1.-phiP) * (1+1.5*sqrt(phiP))
             +  0.413 * Re / 24. / sqr(1-phiP)
              *( 1./(1.-phiP) + 3.0 * phiP * (1-phiP) + 8.4 * pow(Re,-0.343) )
              /( 1. + pow(10.,3.*phiP) * pow(Re,-(1.+4.*phiP)/2.) );
     }
+
     return F;
 }; //end function
 
-double
-multiphaseFlowBasic::F_WenYu
-          (
-            double phiP,
-            double Re
-          )
+scalar multiphaseFlowBasic::F_WenYu(scalar phiP,scalar Re)
 {
 
-    double F;
+    scalar F;
 
     F   = pow(1.-phiP,-3.65)
         *( 1. + 0.15*pow(Re, 0.687) );
@@ -227,17 +231,12 @@ multiphaseFlowBasic::F_WenYu
 }; //end function
 
 
-double
-multiphaseFlowBasic::F_KochHill
-          (
-            double phiP,
-            double Re
-          )
+scalar multiphaseFlowBasic::F_KochHill(scalar phiP,scalar Re)
 {
 
-    double F;
-    double F0, F3;
-    double voidfraction = 1. - phiP;
+    scalar F;
+    scalar F0, F3;
+    scalar voidfraction = 1. - phiP;
 
     //F0
     if(phiP < 0.4)

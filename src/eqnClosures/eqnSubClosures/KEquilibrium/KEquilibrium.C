@@ -119,7 +119,7 @@ void KEquilibrium::kClosure(
   scalar C2Square(C2*C2);
 
   //Get other phase K
-  const volScalarField* kd(fluid_.equations().getFieldScalar(otherKName_));
+  const volScalarField& kd(fluid_.equations().getFieldScalar(otherKName_));
 
   //Correct equation
   forAll(Sr,celli)
@@ -135,7 +135,7 @@ void KEquilibrium::kClosure(
                            betaFac*betaFac
                          + (lm*lm*Sr[celli]*Sr[celli])
                          + 2.*(
-                             C2*betaFac*sqrt((*kd)[celli])
+                             C2*betaFac*sqrt(kd[celli])
 
                          )
 

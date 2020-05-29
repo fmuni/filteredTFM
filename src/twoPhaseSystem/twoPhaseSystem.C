@@ -1,30 +1,30 @@
 /*---------------------------------------------------------------------------*\
-    CFDEMcoupling - Open Source CFD-DEM coupling
+CFDEMcoupling - Open Source CFD-DEM coupling
 
-    CFDEMcoupling is part of the CFDEMproject
-    www.cfdem.com
-                                Christoph Goniva, christoph.goniva@cfdem.com
-                                Copyright 2012-     DCS Computing GmbH, Linz
+CFDEMcoupling is part of the CFDEMproject
+www.cfdem.com
+Christoph Goniva, christoph.goniva@cfdem.com
+Copyright 2012-     DCS Computing GmbH, Linz
 -------------------------------------------------------------------------------
 License
-    This file is part of CFDEMcoupling.
+This file is part of CFDEMcoupling.
 
-    CFDEMcoupling is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or (at your
-    option) any later version.
+CFDEMcoupling is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
 
-    CFDEMcoupling is distributed in the hope that it will be useful, but WITHOUT
-    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-    for more details.
+CFDEMcoupling is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with CFDEMcoupling; if not, write to the Free Software Foundation,
-    Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License
+along with CFDEMcoupling; if not, write to the Free Software Foundation,
+Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
 Contributors
-    Federico Municchi, TUGraz, 2017
+Federico Municchi, TUGraz, 2017
 \*---------------------------------------------------------------------------*/
 
 #include "twoPhaseSystem.H"
@@ -55,93 +55,94 @@ Foam::twoPhaseSystem::twoPhaseSystem
     const dimensionedVector& g
 )
 :
-    IOdictionary
+IOdictionary
+(
+    IOobject
     (
-        IOobject
-        (
-            "phaseProperties",
-            mesh.time().constant(),
-            mesh,
-            IOobject::MUST_READ_IF_MODIFIED,
-            IOobject::NO_WRITE
-        )
-    ),
-
-    mesh_(mesh),
-
-    g_(g),
-
-    writeInternalFields_(
-                           (
-                             found("writeInternalFields")
-                           )
-                           ?
-                           true : false
-                         
-                       ),
-
-    phase1_
-    (
-        *this,
-        *this,
-         //Allow the user to change phase name
-        {
-
-         (
-           found("setPhaseNames")
-         )
-         ?
-         ( word(subDict("setPhaseNames").lookup("dispersed")) )
-         :
-         "dispersed"
-        },
-       true
-    ),
-
-    phase2_
-    (
-        *this,
-        *this,
-         //Allow the user to change phase name
-        {
-
-         (
-           found("setPhaseNames")
-         )
-         ?
-         ( word(subDict("setPhaseNames").lookup("continuous")) )
-         :
-         "continuous"
-       },
-       false
-    ),
-
-    phi_
-    (
-        IOobject
-        (
-            "phi",
-            mesh.time().timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        this->calcPhi()
-    ),
-
-    dgdt_
-    (
-        IOobject
-        (
-            "dgdt",
-            mesh.time().timeName(),
-            mesh,
-            IOobject::READ_IF_PRESENT,
-            IOobject::AUTO_WRITE
-        ),
+        "phaseProperties",
+        mesh.time().constant(),
         mesh,
-        dimensionedScalar("dgdt", dimless/dimTime, 0)
+        IOobject::MUST_READ_IF_MODIFIED,
+        IOobject::NO_WRITE
     )
+),
+
+mesh_(mesh),
+
+g_(g),
+
+writeInternalFields_
+(
+    (
+        found("writeInternalFields")
+    )
+    ?
+    true : false
+
+),
+
+phase1_
+(
+    *this,
+    *this,
+    //Allow the user to change phase name
+    {
+
+        (
+            found("setPhaseNames")
+        )
+        ?
+        ( word(subDict("setPhaseNames").lookup("dispersed")) )
+        :
+        "dispersed"
+    },
+    true
+),
+
+phase2_
+(
+    *this,
+    *this,
+    //Allow the user to change phase name
+    {
+
+        (
+            found("setPhaseNames")
+        )
+        ?
+        ( word(subDict("setPhaseNames").lookup("continuous")) )
+        :
+        "continuous"
+    },
+    false
+),
+
+phi_
+(
+    IOobject
+    (
+        "phi",
+        mesh.time().timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    this->calcPhi()
+),
+
+dgdt_
+(
+    IOobject
+    (
+        "dgdt",
+        mesh.time().timeName(),
+        mesh,
+        IOobject::READ_IF_PRESENT,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("dgdt", dimless/dimTime, 0)
+)
 
 
 {
@@ -163,19 +164,19 @@ Foam::twoPhaseSystem::twoPhaseSystem
     equationManager_.set
     (
         new AuxEquations
-         (
+        (
             *this,
             subDict("equations")
-         )
+        )
     );
 
     runTimeCalculations_.set
     (
         new DynamicParameters
-         (
+        (
             *this,
             subDict("dynamicParameters")
-         )
+        )
     );
 
 
@@ -229,8 +230,8 @@ Foam::tmp<Foam::volVectorField> Foam::twoPhaseSystem::U() const
 Foam::tmp<Foam::surfaceScalarField> Foam::twoPhaseSystem::calcPhi() const
 {
     return
-        fvc::interpolate(phase1_)*phase1_.phi()
-      + fvc::interpolate(phase2_)*phase2_.phi();
+    fvc::interpolate(phase1_)*phase1_.phi()
+    + fvc::interpolate(phase2_)*phase2_.phi();
 }
 
 
@@ -284,8 +285,8 @@ void Foam::twoPhaseSystem::solve()
     if (pPrimeByA_.valid())
     {
         alpha1alpha2f =
-            fvc::interpolate(max(alpha1, scalar(0)))
-           *fvc::interpolate(max(alpha2, scalar(0)));
+        fvc::interpolate(max(alpha1, scalar(0)))
+        *fvc::interpolate(max(alpha2, scalar(0)));
 
         surfaceScalarField phiP
         (
@@ -343,16 +344,16 @@ void Foam::twoPhaseSystem::solve()
                 alpha1,
                 alphaScheme
             )
-          + fvc::flux
+            + fvc::flux
             (
-               -fvc::flux(-phir, scalar(1) - alpha1, alpharScheme),
+                -fvc::flux(-phir, scalar(1) - alpha1, alpharScheme),
                 alpha1,
                 alpharScheme
             )
         );
 
         surfaceScalarField::Boundary& alphaPhic1Bf =
-            alphaPhic1.boundaryFieldRef();
+        alphaPhic1.boundaryFieldRef();
 
         // Ensure that the flux at inflow BCs is preserved
         forAll(alphaPhic1Bf, patchi)
@@ -431,7 +432,7 @@ void Foam::twoPhaseSystem::solve()
             fvScalarMatrix alpha1Eqn
             (
                 fvm::ddt(alpha1) - fvc::ddt(alpha1)
-              - fvm::laplacian(alpha1alpha2f()*pPrimeByA_(), alpha1, "bounded")
+                - fvm::laplacian(alpha1alpha2f()*pPrimeByA_(), alpha1, "bounded")
             );
 
             alpha1Eqn.relax();
@@ -441,19 +442,19 @@ void Foam::twoPhaseSystem::solve()
         }
 
         phase1_.alphaRhoPhi() =
-            fvc::interpolate(phase1_.rho())*phase1_.alphaPhi();
+        fvc::interpolate(phase1_.rho())*phase1_.alphaPhi();
 
         phase2_.alphaPhi() = phi_ - phase1_.alphaPhi();
         alpha1 = max(0.0, alpha1); //bound!
         alpha2 = scalar(1) - alpha1;
         phase2_.alphaRhoPhi() =
-            fvc::interpolate(phase2_.rho())*phase2_.alphaPhi();
+        fvc::interpolate(phase2_.rho())*phase2_.alphaPhi();
 
         Info<< alpha1.name() << " volume fraction = "
-            << alpha1.weightedAverage(mesh_.V()).value()
-            << "  Min(" << alpha1.name() << ") = " << min(alpha1).value()
-            << "  Max(" << alpha1.name() << ") = " << max(alpha1).value()
-            << endl;
+        << alpha1.weightedAverage(mesh_.V()).value()
+        << "  Min(" << alpha1.name() << ") = " << min(alpha1).value()
+        << "  Max(" << alpha1.name() << ") = " << max(alpha1).value()
+        << endl;
     }
 }
 
@@ -505,24 +506,24 @@ const Foam::dimensionedScalar& Foam::twoPhaseSystem::sigma() const
 
 Foam::tmp<volScalarField> Foam::twoPhaseSystem::D() const
 {
-  //NOT IMPLEMENTED: returns zero
-  return phase1_.stressClosure().pPrime()*0.0;
+    //NOT IMPLEMENTED: returns zero
+    return phase1_.stressClosure().pPrime()*0.0;
 }
 
 Foam::tmp<volScalarField> Foam::twoPhaseSystem::KdAve() const
 {
 
-   volVectorField    Umix(phase1_*phase1_.U() + phase2_*phase2_.U());
-   volScalarField    UUmag( mag(Umix)*mag(Umix) );
-   volScalarField    KdNotNorm( Kd()&&(Umix * Umix ));
+    volVectorField    Umix(phase1_*phase1_.U() + phase2_*phase2_.U());
+    volScalarField    UUmag( mag(Umix)*mag(Umix) );
+    volScalarField    KdNotNorm( Kd()&&(Umix * Umix ));
 
-   dimensionedScalar eps1("eps1",UUmag.dimensions(),1e-32);
-   dimensionedScalar eps2("eps2",KdNotNorm.dimensions(),1e-32);
+    dimensionedScalar eps1("eps1",UUmag.dimensions(),1e-32);
+    dimensionedScalar eps2("eps2",KdNotNorm.dimensions(),1e-32);
 
 
-   return(
-           (KdNotNorm + eps2)/( UUmag +eps1 )
-   );
+    return(
+        (KdNotNorm + eps2)/( UUmag +eps1 )
+    );
 
 
 
@@ -530,52 +531,59 @@ Foam::tmp<volScalarField> Foam::twoPhaseSystem::KdAve() const
 
 Foam::tmp<surfaceScalarField> Foam::twoPhaseSystem::KdfAve() const
 {
- volVectorField    Umix(phase1_*phase1_.U() + phase2_*phase2_.U());
- volScalarField    UUmag( mag(Umix)*mag(Umix) );
- surfaceScalarField    KdNotNorm( Kdf()&&fvc::interpolate(Umix * Umix ));
+    volVectorField    Umix(phase1_*phase1_.U() + phase2_*phase2_.U());
+    volScalarField    UUmag( mag(Umix)*mag(Umix) );
+    surfaceScalarField    KdNotNorm( Kdf()&&fvc::interpolate(Umix * Umix ));
 
- dimensionedScalar eps1("eps1",UUmag.dimensions(),1e-32);
- dimensionedScalar eps2("eps2",KdNotNorm.dimensions(),1e-32);
+    dimensionedScalar eps1("eps1",UUmag.dimensions(),1e-32);
+    dimensionedScalar eps2("eps2",KdNotNorm.dimensions(),1e-32);
 
 
- return(
-         (KdNotNorm + eps2)/fvc::interpolate( UUmag +eps1 )
- );
+    return(
+        (KdNotNorm + eps2)/fvc::interpolate( UUmag +eps1 )
+    );
 
 }
 
-void Foam::twoPhaseSystem::applyDrag(volVectorField&   U,
-                                     fvVectorMatrix& UEqn)
+void Foam::twoPhaseSystem::applyDrag
+(
+    volVectorField&   U,
+    fvVectorMatrix& UEqn
+)
 {
-  //Isotropic component of drag tensor
-  tensorField                fullDrag( Kd() );
-  volScalarField         isoDrag(1.0/3.0*tr(Kd()) );
+    //Isotropic component of drag tensor
+    tensorField                fullDrag( Kd() );
+    volScalarField         isoDrag(1.0/3.0*tr(Kd()) );
 
-  const scalarField& V = mesh_.V();
-  scalarField& Udiag = UEqn.diag();
-  vectorField& Usource = UEqn.source();
+    const scalarField& V = mesh_.V();
+    scalarField& Udiag = UEqn.diag();
+    vectorField& Usource = UEqn.source();
 
-  //Apply drag to matrix
-  forAll(Udiag, celli)
-  {
-   //Isotropic drag is implicit
-    Udiag[celli] += V[celli]*isoDrag[celli];
-    //Anisotropic components are explicit
-    Usource[celli] -= V[celli]*( (fullDrag[celli] - tensor::I*isoDrag[celli] )
-                                  & U[celli]
-                               );
- }
+    //Apply drag to matrix
+    forAll(Udiag, celli)
+    {
+        //Isotropic drag is implicit
+        Udiag[celli] += V[celli]*isoDrag[celli];
+        //Anisotropic components are explicit
+        Usource[celli] -=
+        (
+             V[celli]*
+             (
+                 (fullDrag[celli] - tensor::I*isoDrag[celli])
+             )&U[celli]
+        );
+    }
 
 }
 
 void Foam::twoPhaseSystem::writeInternalFields() const
 {
-  if(writeInternalFields_ )
-  {
-    drag_->writeFields();
-    phase1_.stressClosure().writeFields();
-    phase2_.stressClosure().writeFields();
-  }
+    if(writeInternalFields_ )
+    {
+        drag_->writeFields();
+        phase1_.stressClosure().writeFields();
+        phase2_.stressClosure().writeFields();
+    }
 }
 
 // ************************************************************************* //

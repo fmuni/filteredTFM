@@ -32,102 +32,108 @@ Contributors
 
 #include "fvCFD.H"
 #include "twoPhaseSystem.H"
-#include <vector>
 
 
 namespace Foam
 {
 
- enum{
-       SCALAR, VECTOR, TENSOR
-     };
+enum
+{
+    SCALAR, VECTOR, TENSOR
+};
 
- enum{
-       TRANSPORT, EQUILIBRIUM
-     };
+enum
+{
+    TRANSPORT, EQUILIBRIUM
+};
 
- enum{
-       MIXTURE, CONTINUOUS, DISPERSED
-     };
+enum
+{
+    MIXTURE, CONTINUOUS, DISPERSED
+};
 
-  class EqnClosure;
+class EqnClosure;
 
-  //-Keep generic information for easy addressing
-  struct eqnInformation
-  {
-     wordList                    names; //names of fields
-     std::vector<int>             rank; //rank (SCALAR,VECTOR or TENSOR)
-     std::vector<int>             type; //transport or algebraic
-     std::vector<EqnClosure*> closures; //Closure for the correspondinf equation
-     std::vector<int>            phase; //phase knowledge is required for transport
-  };
-
-
+//-Keep generic information for easy addressing
+struct eqnInformation
+{
+    wordList                    names; //names of fields
+    labelList                    rank; //rank (SCALAR,VECTOR or TENSOR)
+    labelList                    type; //transport or algebraic
+    PtrList<EqnClosure>      closures; //Closure for the correspondinf equation
+    labelList                   phase; //phase knowledge is required for transport
+};
 
 
- class AuxEquations
- {
-  protected:
 
-   //Members
 
-    twoPhaseSystem&         fluid_;
+class AuxEquations
+{
+    protected:
 
-    dictionary          settings_;
+    //Members
+
+    twoPhaseSystem&               fluid_;
+
+    dictionary                 settings_;
 
     eqnInformation              eqnInfo_;
 
-
     //Field containers
-    std::vector<volScalarField*>   scalarFields_;
-    std::vector<volVectorField*>   vectorFields_;
-    std::vector<volTensorField*>   tensorFields_;
+    PtrList<volScalarField>   scalarFields_;
+    PtrList<volVectorField>   vectorFields_;
+    PtrList<volTensorField>   tensorFields_;
 
-   //Methods
+    //Methods
 
-   //-Creates a transport equation
-   template<class T>
-   tmp<fvMatrix<T>> transportEquation(
-                                       GeometricField<T,fvPatchField,volMesh>& field,
-                                       int eqId
-                                      );
+    //-Creates a transport equation
+    template<class T>
+    tmp<fvMatrix<T>> transportEquation
+    (
+        GeometricField<T,fvPatchField,volMesh>& field,
+        label eqId
+    );
 
-   //-Creates an equilibrium equation
-   template<class T>
-   tmp<fvMatrix<T>> equilibriumEquation(
-                                         GeometricField<T,fvPatchField,volMesh>& field,
-                                         int eqId
-                                        );
+    //-Creates an equilibrium equation
+    template<class T>
+    tmp<fvMatrix<T>> equilibriumEquation
+    (
+        GeometricField<T,fvPatchField,volMesh>& field,
+        int eqId
+    );
+
     //-Creates system of equations
-   template<class T>
-   tmp<fvMatrix<T>> createEquation(
-                                     GeometricField<T,fvPatchField,volMesh>& field,
-                                     int eqId
-                                   );
+    template<class T>
+    tmp<fvMatrix<T>> createEquation
+    (
+        GeometricField<T,fvPatchField,volMesh>& field,
+        int eqId
+    );
 
-
-
-    //-Builds and solves equations
+    //-Build and solve equations
     template<class rank>
-    void solveEquation(
-                             GeometricField<rank,fvPatchField,volMesh> * field,
-                             int eqId
-                           );
-
-    template<class rank>
-    void solveDifferentialEquation(
-                                    fvMatrix<rank>& diffEqn,
-                                    GeometricField<rank,fvPatchField,volMesh>& field
-                                  );
+    void solveEquation
+    (
+        GeometricField<rank,fvPatchField,volMesh>& field,
+        int eqId
+    );
 
     template<class rank>
-    void solveAlgebraicEquation(
-                                  fvMatrix<rank>& algEqn,
-                                  GeometricField<rank,fvPatchField,volMesh>& field
-                                );
+    void solveDifferentialEquation
+    (
+        fvMatrix<rank>& diffEqn,
+        GeometricField<rank,fvPatchField,volMesh>& field
+    );
+
+    template<class rank>
+    void solveAlgebraicEquation
+    (
+        fvMatrix<rank>& algEqn,
+        GeometricField<rank,fvPatchField,volMesh>& field
+    );
 
 
-  public:
+    public:
 
 
     //Members
@@ -136,27 +142,30 @@ namespace Foam
 
     //Methods
 
-     //Construct from fTFM object and dictionary
-     AuxEquations
-     (
-      twoPhaseSystem&             fluid,
-      dictionary              auxEquationsDict
-     );
+    //Construct from fTFM object and dictionary
+    AuxEquations
+    (
+        twoPhaseSystem&             fluid,
+        dictionary              auxEquationsDict
+    );
 
-     //Destructor
-     ~AuxEquations();
+    //Destructor
+    ~AuxEquations();
 
-     void requestEquation(word equationName, word requestingClass) const;
+    void requestEquation(word equationName, word requestingClass) const;
 
-     //Check field and call equation builder and solver
-     void solveField(word fieldName);
+    //Check field and call equation builder and solver
+    void solveField(word fieldName);
 
-     //Getters for fieldsToSolve
-     const volScalarField* getFieldScalar(word fieldname);
-     const volVectorField* getFieldVector(word fieldname);
-     const volTensorField* getFieldTensor(word fieldname);
+    //Getters for fieldsToSolve
+    const volScalarField& getFieldScalar(word fieldname);
+    const volVectorField& getFieldVector(word fieldname);
+    const volTensorField& getFieldTensor(word fieldname);
 
- };
+    //Getters for id
+    label getEquationId(word fieldName);
+
+};
 }
 
 #endif

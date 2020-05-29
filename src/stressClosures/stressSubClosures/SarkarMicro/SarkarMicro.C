@@ -33,35 +33,32 @@ Contributors
 #include "addToRunTimeSelectionTable.H"
 #include "twoPhaseSystem.H"
 
-#define TOL 1E-10
-
-
 
 namespace Foam
 {
 
- defineTypeNameAndDebug(SarkarMicro, 0);
+defineTypeNameAndDebug(SarkarMicro, 0);
 
- addToRunTimeSelectionTable(StressSubClosure, SarkarMicro, dictionary);
+addToRunTimeSelectionTable(StressSubClosure, SarkarMicro, dictionary);
 //-------------------------- Constructors ---------------------------------//
- SarkarMicro::SarkarMicro(
-                                  const dictionary&          dict,
-                                  phaseModel&               phase
-                                 )
- :
- StressSubClosure(dict,phase)
- {
-   createViscosity(typeName_());
-   createPressure(typeName_());
-
- };
+SarkarMicro::SarkarMicro
+(
+    const dictionary&          dict,
+    phaseModel&               phase
+)
+:
+StressSubClosure(dict,phase)
+{
+    createViscosity(typeName_());
+    createPressure(typeName_());
+};
 //-------------------------- Destructors ----------------------------------//
- SarkarMicro::~SarkarMicro()
- {
- };
+SarkarMicro::~SarkarMicro()
+{
+};
 //---------------------------   Methods  ----------------------------------//
- void SarkarMicro::correct()
- {
+void SarkarMicro::correct()
+{
 
     //get strain rate Sr
     scalarField Sr(  markers().strainRate(phase_) );
@@ -72,26 +69,31 @@ namespace Foam
     //Get settling velocity
     const scalar settlingU(phase_.fluid().dynPar().settlingU());
 
-    scalar Cnu(
-               0.00307
-              *pow(
-                    g/(settlingU*settlingU),
-                   -6.0/7.0
-                  )
-              );
+    scalar Cnu
+    (
+
+        0.00307
+         *pow
+         (
+                g/(settlingU*settlingU),
+               -6.0/7.0
+         )
+    );
 
     forAll(Sr,celli)
     {
-     //bounded delta alpha (ensures stability)
-      scalar deltaAlpha(
-                          max(
-                             phase_.alphaMax() - phase_[celli],
-                           phase_.residualAlpha().value()
-                        )
-     );
+        //bounded delta alpha (ensures stability)
+        scalar deltaAlpha
+        (
+            max
+            (
+                 phase_.alphaMax() - phase_[celli],
+                 phase_.residualAlpha().value()
+            )
+        );
 
 
-      //evaluate pressure
+        //evaluate pressure
         pPrime()[celli] =  phase_.rho()()[celli]*0.01797
                         * markers().filterSize(celli,DIMENSIONAL)
                         * markers().filterSize(celli,DIMENSIONAL)
@@ -99,8 +101,8 @@ namespace Foam
                         * pow(max(phase_[celli],0.),1.645)
                         / deltaAlpha;
 
-       //evaluate viscosity
-       nu()[celli] =  Cnu
+        //evaluate viscosity
+        nu()[celli] =  Cnu
                          * pow(markers().filterSize(celli,DIMENSIONAL),8.0/7.0)
                          * Sr[celli]
                          * pow(max(phase_[celli],0.),1.544)
@@ -108,10 +110,10 @@ namespace Foam
 
     }
 
-       //Apply smoothing to zero in case of dilute particle phase
-       smoothToZero(pPrime());
-       smoothToZero(nu());
+    //Apply smoothing to zero in case of dilute particle phase
+    smoothToZero(pPrime());
+    smoothToZero(nu());
 
 
- }
+}
 }

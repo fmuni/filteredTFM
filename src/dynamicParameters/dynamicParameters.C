@@ -37,9 +37,11 @@ Contributors
 
 using namespace Foam;
 //-------------------------- Constructors ---------------------------------//
-Foam::DynamicParameters::DynamicParameters( const twoPhaseSystem&        fluid,
-                                            dictionary   auxEquationsDict
-                                          )
+Foam::DynamicParameters::DynamicParameters
+(
+    const twoPhaseSystem&        fluid,
+    dictionary   auxEquationsDict
+)
 :
 fluid_(fluid),
 settings_(auxEquationsDict),
@@ -50,11 +52,11 @@ slipU_
 {
      IOobject
     (
-     "slipU",
-     fluid_.mesh().time().timeName(),
-     fluid_.mesh(),
-     IOobject::NO_READ,
-     IOobject::NO_WRITE
+         "slipU",
+         fluid_.mesh().time().timeName(),
+         fluid_.mesh(),
+         IOobject::NO_READ,
+         IOobject::NO_WRITE
     ),
     fluid_.mesh(),
     dimensionedVector("0",dimless,vector::zero)
@@ -63,30 +65,30 @@ Sr_
 {
      IOobject
     (
-     "StrainRate",
-     fluid_.mesh().time().timeName(),
-     fluid_.mesh(),
-     IOobject::NO_READ,
-     IOobject::NO_WRITE
+         "StrainRate",
+         fluid_.mesh().time().timeName(),
+         fluid_.mesh(),
+         IOobject::NO_READ,
+         IOobject::NO_WRITE
     ),
     fluid_.mesh(),
     dimensionedScalar("0",dimensionSet(0,0,-1,0,0,0,0),0.)
 }
 {
   //Set settling information
-  word dragSettling(settings_.lookup("settlingDrag"));
-  setupSettling(dragSettling, filterWidth_);
+    word dragSettling(settings_.lookup("settlingDrag"));
+    setupSettling(dragSettling, filterWidth_);
 
-  if(settings_.found("constantFilterSize"))
-  {
-    FrFilter=&DynamicParameters::FrConstant;
-    deltaF=&DynamicParameters::deltaFConstant;
-  }
-  else
-  {
-    FrFilter=&DynamicParameters::FrNoConstant;
-    deltaF=&DynamicParameters::deltaFNoConstant;
-  }
+    if(settings_.found("constantFilterSize"))
+    {
+        FrFilter=&DynamicParameters::FrConstant;
+        deltaF=&DynamicParameters::deltaFConstant;
+    }
+    else
+    {
+        FrFilter=&DynamicParameters::FrNoConstant;
+        deltaF=&DynamicParameters::deltaFNoConstant;
+    }
 
 };
 //-------------------------- Destructors ----------------------------------//
@@ -94,130 +96,166 @@ Foam::DynamicParameters::~DynamicParameters()
 {
 };
 //---------------------------   Methods  ----------------------------------//
-void Foam::DynamicParameters::setupSettling(word dragLaw, double filterSize )
+void Foam::DynamicParameters::setupSettling(word dragLaw, scalar filterSize )
 {
-  basicCalculations_.setupSettling(
-                     fluid_.phase1().d()()[0],
-                     fluid_.phase1().rho()()[0],
-                     mag(fluid_.g()).value(),
-                     fluid_.phase2().nu()()[0],
-                     fluid_.phase2().rho()()[0],
-                     dragLaw,
-                     filterSize
-  );
+    basicCalculations_.setupSettling
+    (
+        fluid_.phase1().d()()[0],
+        fluid_.phase1().rho()()[0],
+        mag(fluid_.g()).value(),
+        fluid_.phase2().nu()()[0],
+        fluid_.phase2().rho()()[0],
+        dragLaw,
+        filterSize
+    );
 }
 
-double Foam::DynamicParameters::FrConstant(int celli) const
+scalar Foam::DynamicParameters::FrConstant(int celli) const
 {
   return basicCalculations_.settling.FrPf;
 }
 
-double Foam::DynamicParameters::FrNoConstant(int celli) const
+scalar Foam::DynamicParameters::FrNoConstant(int celli) const
 {
-  return (
-            basicCalculations_.settling.FrPf
-          * filterWidth_
-          / pow(fluid_.mesh().V()[celli],1./3.)
-         );
+    return
+    (
+        basicCalculations_.settling.FrPf
+      * filterWidth_
+      / pow(fluid_.mesh().V()[celli],1./3.)
+    );
 }
 
-double Foam::DynamicParameters::filterFr(int celli) const
+scalar Foam::DynamicParameters::filterFr(int celli) const
 {
-   return (this->*FrFilter)(celli);
+    return (this->*FrFilter)(celli);
 }
 
-double Foam::DynamicParameters::filterSize(int celli, int dim) const
+scalar Foam::DynamicParameters::filterSize(int celli, int dim) const
 {
-   return (this->*deltaF)(celli,dim);
+    return (this->*deltaF)(celli,dim);
 }
 
-double Foam::DynamicParameters::deltaFConstant(int celli, int dim) const
+scalar Foam::DynamicParameters::deltaFConstant(int celli, int dim) const
 {
- if(dim==DIMENSIONLESS)
-  return filterWidth_/(settlingU()*settlingU())*gValue();
+    if(dim==DIMENSIONLESS)
+    {
+        return filterWidth_/(settlingU()*settlingU())*gValue();
+    }
 
- return filterWidth_;
+    return filterWidth_;
 }
 
-double Foam::DynamicParameters::deltaFNoConstant(int celli,int dim) const
+scalar Foam::DynamicParameters::deltaFNoConstant(int celli,int dim) const
 {
- if(dim==DIMENSIONLESS)
-  return pow(fluid_.mesh().V()[celli],1./3.)/(settlingU()*settlingU())*gValue();
+    if(dim==DIMENSIONLESS)
+    {
+        return
+            pow(fluid_.mesh().V()[celli],1./3.)
+          / (settlingU()*settlingU())*gValue();
+    }
 
- return pow(fluid_.mesh().V()[celli],1./3.);
+    return pow(fluid_.mesh().V()[celli],1./3.);
 }
 
 const Foam::volScalarField&
-Foam::DynamicParameters::getProcessedField(
-                                             volScalarField& baseField,
-                                             word operationName
+Foam::DynamicParameters::getProcessedField
+(
+    volScalarField& baseField,
+    word operationName
 ) const
 {
-  if(operationName == "none")
-   return baseField;
+    if(operationName == "none")
+    {
+        return baseField;
+    }
 
-  for(unsigned int id=0;id<filteredFieldsScalar_.size();id++)
-  {
-    if( (baseField.name()+ "." + operationName)
-           == filteredFieldsScalar_[id]->name()
-      )
-     return (*filteredFieldsScalar_[id]);
-  }
 
-  FatalError << "No operation " << operationName
-             << " was defined for field " << baseField.name()
-             << exit(FatalError);
-  return baseField;
+    forAll(filteredFieldsScalar_,id)
+    {
+        if
+        (
+            (baseField.name()+ "." + operationName)
+            ==
+            filteredFieldsScalar_[id].name()
+        )
+        {
+            return filteredFieldsScalar_[id];
+        }
+
+    }
+
+    FatalError<< "No operation " << operationName
+            << " was defined for field " << baseField.name()
+            << exit(FatalError);
+
+    return baseField;
 }
 
-const Foam::volScalarField& Foam::DynamicParameters::getProcessedField(
-                                                         word baseName,
-                                                         word operationName
+const Foam::volScalarField& Foam::DynamicParameters::getProcessedField
+(
+    word baseName,
+    word operationName
 ) const
 {
 
-  for(unsigned int id=0;id<filteredFieldsScalar_.size();id++)
-  {
-    if( (baseName + "." + operationName) == filteredFieldsScalar_[id]->name())
-     return (*filteredFieldsScalar_[id]);
-  }
+    forAll(filteredFieldsScalar_,id)
+    {
+        if
+        (
+            (baseName + "." + operationName)
+            ==
+            filteredFieldsScalar_[id].name()
+        )
+        {
+            return filteredFieldsScalar_[id];
+        }
 
-  FatalError << "No operation " << operationName
+    }
+
+    FatalError << "No operation " << operationName
              << " was defined for field " << baseName
              << exit(FatalError);
-  //Return generic field
-  return fluid_.phase1().rho();
+
+    //Return generic field
+    return fluid_.phase1().rho();
 }
 
-void Foam::DynamicParameters::createOperationField(
-                                                     volScalarField& baseField,
-                                                     word operationName
+void Foam::DynamicParameters::createOperationField
+(
+    volScalarField& baseField,
+    word operationName
 ) const
 {
-  if(operationName=="none")
-   return;
+    if(operationName=="none")
+    {
+        return;
+    }
 
-  FatalError << "Could not find operation " << operationName << exit(FatalError);
+    FatalError<< "Could not find operation "
+        << operationName << exit(FatalError);
 }
 
-double Foam::DynamicParameters::settlingU() const
+scalar Foam::DynamicParameters::settlingU() const
 {
   return basicCalculations_.settling.u;
 }
 
 const Foam::volVectorField&
-Foam::DynamicParameters::scaledSlipU( const phaseModel& continuous,
-                                      const phaseModel& dispersed
-                                    ) const
+Foam::DynamicParameters::scaledSlipU
+(
+    const phaseModel& continuous,
+    const phaseModel& dispersed
+) const
 {
     //TODO: the update should be in a separate function!
-    dimensionedScalar dimSettling("set",
-                                   dimensionSet(0,1,-1,0,0,0,0),
-                                   settlingU()
-                                 );
+    dimensionedScalar dimSettling
+    (
+        "set",
+         dimensionSet(0,1,-1,0,0,0,0),
+         settlingU()
+    );
 
-    slipU_ =   (continuous.U()  -  dispersed.U())
-                    /  dimSettling;
+    slipU_ = (continuous.U()  -  dispersed.U())/dimSettling;
 
     return slipU_;
 }
@@ -227,89 +265,78 @@ Foam::DynamicParameters::strainRate( const phaseModel& phase
                                     ) const
 {
     //TODO: the update should be in a separate function!
-    
+
     Sr_ = sqrt(2.)*mag(dev(symm(fvc::grad(phase.U()))));
 
     return  Sr_;
 }
 
 Foam::tmp<volSymmTensorField>
-Foam::DynamicParameters::relAniTensor( const phaseModel& phase,
-                                       const vector& aCoeffs
-                                    ) const
+Foam::DynamicParameters::relAniTensor
+(
+    const phaseModel& phase,
+    const vector& aCoeffs
+) const
 {
     //Define tolerances
-    dimensionedScalar Utol("Utol",
-                           dimensionSet(0,1,-1,0,0,0,0),
-                           1e-16
-                          );
+    dimensionedScalar Utol("Utol",dimVelocity,small);
 
-    dimensionedScalar GradUtol("GradUtol",
-                                dimensionSet(0,0,-1,0,0,0,0),
-                                1e-16
-                               );
+    dimensionedScalar GradUtol("DUtol", dimensionSet(0,0,-1,0,0,0,0),small);
 
-    volVectorField dirU      = phase.U()
-                              /
-                              max( mag(phase.U()) ,Utol ) ;
+    volVectorField dirU
+    (
+        phase.U()/ max( mag(phase.U()) ,Utol )
+    );
 
-    volVectorField dirCurlU  =   fvc::curl(phase.U())
-                                /
-                                max(
-                                     mag(
-                                          fvc::curl(phase.U())
-                                      ),
-                                      GradUtol
-                                   );
-    
+    volVectorField dirCurlU
+    (
+        fvc::curl(phase.U())/max(mag(fvc::curl(phase.U())),GradUtol)
+    );
     //- It does not make any sense to evaluate the direction of the
     //  velocity gradient since it is a rank 2 tensor.
     //  However, a similar direction is required by some closures.
-    //  Therefore, we define such direction to be perpendicular to both 
+    //  Therefore, we define such direction to be perpendicular to both
     //  dirU and curlU.
-    
-    volVectorField dirGrad  =  dirCurlU ^ dirU
-                              /
-                              max(
-                                   mag(dirCurlU ^ dirU),
-                                   GradUtol.value()
-                               );
 
-    return  symm(
-                aCoeffs.x() * dirU*dirU
-             +  aCoeffs.y() * dirGrad*dirGrad
-             +  aCoeffs.z() * dirCurlU*dirCurlU
+    volVectorField dirGrad
+    (
+        (dirCurlU ^ dirU)/max(mag(dirCurlU ^ dirU),GradUtol.value())
+    );
+    return  symm
+    (
+        aCoeffs.x() * dirU*dirU
+     +  aCoeffs.y() * dirGrad*dirGrad
+     +  aCoeffs.z() * dirCurlU*dirCurlU
     );
 }
 
-double Foam::DynamicParameters::gValue() const
+scalar Foam::DynamicParameters::gValue() const
 {
-  return mag(fluid_.g()).value();
+    return mag(fluid_.g()).value();
 }
 
 Foam::dimensionedVector Foam::DynamicParameters::g()  const
 {
-  return fluid_.g();
+    return fluid_.g();
 }
 
 void  Foam::DynamicParameters::checkFilterSize(scalar refFilterSize) const
 {
-  double toleranceValue = 1e-10;
 
-  forAll(fluid_.mesh().C(),celli)
-  {
-   double deltaF = double( filterSize(celli,DIMENSIONLESS) - refFilterSize );
 
-    if(deltaF < toleranceValue)
+    forAll(fluid_.mesh().C(),celli)
     {
+        scalar deltaF( filterSize(celli,DIMENSIONLESS) - refFilterSize );
 
-      FatalError << "\nA closure requires a reference filter size that is smaller"
-               << " than the mesh size."
-               << "\nYour mesh is " << filterSize(celli,DIMENSIONLESS)/refFilterSize
-               << " times the reference filter size."
-               << exit(FatalError);
+        if(deltaF < small)
+        {
 
-
-   }
-  }
+            FatalError << "\nA closure requires a reference filter size that"
+                << " is smaller than the mesh size."
+                << "\nYour mesh is "
+                << filterSize(celli,DIMENSIONLESS)/refFilterSize
+                << " times the reference filter size."
+                << exit(FatalError);
+        }
+    }
 }

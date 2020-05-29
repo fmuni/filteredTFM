@@ -66,7 +66,7 @@ using namespace Foam;
 void alphaVarEquilibrium::closeEquation(fvMatrix<scalar>& Eqn, volScalarField& field)
 {
  scalarField divU(fvc::div(fluid_.phase1().phi()));
- const volScalarField* kd(fluid_.equations().getFieldScalar(KdName_));
+ const volScalarField& kd(fluid_.equations().getFieldScalar(KdName_));
  vectorField gradPhi(fvc::grad(fluid_.phase1()));
 
 
@@ -82,10 +82,10 @@ void alphaVarEquilibrium::closeEquation(fvMatrix<scalar>& Eqn, volScalarField& f
 
    scalar kdFac(
            divU[celli]
-         + Cphis_*Ceps_* sqrt((*kd)[celli])/lms
+         + Cphis_*Ceps_* sqrt(kd[celli])/lms
    );
 
-   scalar source(    epphis_*epphis_*(*kd)[celli]
+   scalar source(    epphis_*epphis_*kd[celli]
                      * deriv*deriv
                     /
                     (

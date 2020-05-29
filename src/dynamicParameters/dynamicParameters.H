@@ -1,5 +1,3 @@
-#ifndef DYNAMIC_PARAMETERS_H
-#define DYNAMIC_PARAMETERS_H
 /*---------------------------------------------------------------------------*\
     CFDEMcoupling - Open Source CFD-DEM coupling
 
@@ -32,24 +30,24 @@ Description
 Contributors
     Federico Municchi, TUGraz, 2017
 \*---------------------------------------------------------------------------*/
+#ifndef DYNAMIC_PARAMETERS_H
+#define DYNAMIC_PARAMETERS_H
+
 #include "fvCFD.H"
 #include "multiphaseFlowBasic.H"
 
 
 namespace Foam
 {
- //-Forward class declarations
- class twoPhaseSystem;
- class phaseModel;
+//-Forward class declarations
+class twoPhaseSystem;
+class phaseModel;
 
- enum {DIMENSIONLESS, DIMENSIONAL};
+enum {DIMENSIONLESS, DIMENSIONAL};
 
- class DynamicParameters
- {
-  protected:
-
-   //Members
-
+class DynamicParameters
+{
+    protected:
 
     const twoPhaseSystem&             fluid_;
 
@@ -68,105 +66,114 @@ namespace Foam
 
     //-Important markers
 
-     //-scaled slip Velocity
-     mutable volVectorField slipU_;
+    //-scaled slip Velocity
+    mutable volVectorField slipU_;
 
-     //-strain rate
-     mutable volScalarField Sr_;
-
-
-   //Methods
-
-   //-Calculate quantities for an isolated sphere
-   void setupSettling(word dragLaw, double filterSize);
-
-   //-Check if the mesh is Cartesian
-   void checkCartesian();
+    //-strain rate
+    mutable volScalarField Sr_;
 
 
+    //Methods
 
-   //-Returns filter Freud number
-   double  (DynamicParameters::*FrFilter)(int celli) const;
+    //-Calculate quantities for an isolated sphere
+    void setupSettling(word dragLaw, scalar filterSize);
 
-   //-Returns filter size
-   double  (DynamicParameters::*deltaF)(int celli, int dim) const;
-
-   //Return Filter Freud number Cartesian
-   double FrConstant(int celli) const;
-
-   //Return filter Freud number non-Cartesian
-   double FrNoConstant(int celli) const;
-
-   //Return filter size Cartesian
-   double deltaFConstant(int celli, int dim) const;
-
-   //Return filter size non-Cartesian
-   double deltaFNoConstant(int celli, int dim) const;
+    //-Check if the mesh is Cartesian
+    void checkCartesian();
 
 
-   //Vector of processed scalar fields
-   //i.e., some operation has been performed on them
-   std::vector<volScalarField*>    filteredFieldsScalar_;
 
-  public:
+    //-Returns filter Freud number
+    scalar  (DynamicParameters::*FrFilter)(int celli) const;
+
+    //-Returns filter size
+    scalar  (DynamicParameters::*deltaF)(int celli, int dim) const;
+
+    //Return Filter Freud number Cartesian
+    scalar FrConstant(int celli) const;
+
+    //Return filter Freud number non-Cartesian
+    scalar FrNoConstant(int celli) const;
+
+    //Return filter size Cartesian
+    scalar deltaFConstant(int celli, int dim) const;
+
+    //Return filter size non-Cartesian
+    scalar deltaFNoConstant(int celli, int dim) const;
+
+
+    //Vector of processed scalar fields
+    //i.e., some operation has been performed on them
+    PtrList<volScalarField>    filteredFieldsScalar_;
+
+    public:
 
 
     //Members
 
     //Methods
 
-     //Construct from fTFM object and dictionary
-     DynamicParameters
-     (
-      const twoPhaseSystem&             fluid,
-      dictionary              auxEquationsDict
-     );
+    //Construct from fTFM object and dictionary
+    DynamicParameters
+    (
+        const twoPhaseSystem&             fluid,
+        dictionary              auxEquationsDict
+    );
 
-     //Destructor
-     ~DynamicParameters();
+    //Destructor
+    ~DynamicParameters();
 
-     //Return filter Freud number
-     double filterFr(int celli) const;
+    //Return filter Freud number
+    scalar filterFr(int celli) const;
 
-     //Get desired field
-     //Base-field + operation name
-     const volScalarField& getProcessedField(
-                                              volScalarField& baseField,
-                                              word operationName
+    //Get desired field
+    //Base-field + operation name
+    const volScalarField& getProcessedField
+    (
+        volScalarField& baseField,
+        word operationNam
     ) const;
 
     //Field name + operation name
     //Base-field + operation name
-    const volScalarField& getProcessedField(
-                                             word fieldName,
-                                             word operationName
+    const volScalarField& getProcessedField
+    (
+        word fieldName,
+        word operationName
     ) const;
 
     //Create new operation for scalar field
-    void createOperationField(
-                                     volScalarField& baseField,
-                                     word operationName
+    void createOperationField
+    (
+        volScalarField& baseField,
+        word operationName
     ) const;
 
     //-Get settling velocity
-    double settlingU() const;
+    scalar settlingU() const;
 
     //-Get filter size
-    double filterSize( label celli, int dim=DIMENSIONLESS) const;
+    scalar filterSize( label celli, int dim=DIMENSIONLESS) const;
 
     //-Get slip velocity
-    const volVectorField& scaledSlipU(const phaseModel& continuous,
-                                    const  phaseModel& dispersed) const;
+    const volVectorField& scaledSlipU
+    (
+        const phaseModel& continuous,
+        const  phaseModel& dispersed
+    ) const;
 
     //-Get strain rate
     const volScalarField& strainRate(const phaseModel& phase) const;
 
     //-Get anisotropic relative reference tensor field
-    tmp<volSymmTensorField> relAniTensor( const phaseModel& phase,
-                                            const vector& aCoeffs) const;
+    tmp<volSymmTensorField> relAniTensor
+    (
+        const phaseModel& phase,
+        const vector& aCoeffs
+    ) const;
 
     //-Return gravity value
-    double gValue() const;
+    scalar gValue() const;
 
     //- Return gravity vector
     dimensionedVector g()  const;
@@ -176,7 +183,7 @@ namespace Foam
 
 
 
- };
+};
 }
 
 #endif

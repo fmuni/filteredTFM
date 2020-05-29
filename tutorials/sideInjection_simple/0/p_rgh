@@ -23,7 +23,7 @@ boundaryField
 {
     "inlet.*"
     {
-        type            fixedFluxPressure;
+        type            zeroGradient;
         value           $internalField;
     }
 

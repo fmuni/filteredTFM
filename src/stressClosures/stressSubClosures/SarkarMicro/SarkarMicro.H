@@ -60,7 +60,7 @@ namespace Foam
 
     // Destructors
 
-     virtual ~SarkarMicro();
+    virtual ~SarkarMicro();
 
 
     //Correct stress tensor

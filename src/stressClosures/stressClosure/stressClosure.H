@@ -70,9 +70,9 @@ namespace Foam
      //Construct from phaseModel object and dictionary
      StressClosure
      (
-      phaseModel&              phase,
-      dictionary         closureDict,
-      bool               isDispersed
+          phaseModel&              phase,
+          dictionary         closureDict,
+          bool               isDispersed
      );
 
      //Destructor
