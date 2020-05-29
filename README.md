@@ -11,7 +11,7 @@ __This repository has a [nice and detailed Wiki page](https://github.com/fmuni/f
 Copyright Notice
 ------------------
 
-- Copyright 2017 - Graz University of Technology (F. Municchi, S. Radl).
+- Copyright 2017 - Graz University of Technology (Federico Municchi and Stefan Radl).
 
 All rights reserved.
 
