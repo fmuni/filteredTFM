@@ -1,6 +1,8 @@
 filteredTFM
 ==
-A filtered Two Fluid Model library and solver for OpenFOAM®
+A filtered Two Fluid Model library and solver for OpenFOAM® 
+
+[![DOI](https://zenodo.org/badge/116272813.svg)](https://zenodo.org/badge/latestdoi/116272813)
 
 This eulerianFilteredTFM library is a derivative work of the eulerianFilteredTFM library included in [CFDEMcoupling](https://www.cfdem.com/cfdemcoupling), which has been developed within the 
 [NanoSim Project](http://sintef.no/NanoSim) project by DCS Computing GmbH (Linz, Austria) and 
@@ -34,4 +36,5 @@ __eulerianFilteredTFM__ is a C++ library based on the open source finite
 
 The library features several closures for the interphase transfer coefficients, the
 phase stress tensor and additional user defined equations.
+
 
