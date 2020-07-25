@@ -9,30 +9,40 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "system";
-    object      setFieldsDict;
+    class       volScalarField;
+    object      p_rgh;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-defaultFieldValues
-(
-    volScalarFieldValue alpha.air 1
-    volScalarFieldValue alpha.particles 0
-);
+dimensions          [1 -1 -2 0 0 0 0];
 
-regions
-(
-    boxToCell
+internalField       uniform 0;
+
+boundaryField
+{
+    "inlet.*"
     {
-        box (-0.1335 0 0) (0.1335 0.9 0.1);
-        fieldValues
-        (
-            volScalarFieldValue alpha.air 0.45
-            volScalarFieldValue alpha.particles 0.55
-        );
+        type            zeroGradient;
+        value           $internalField;
     }
-);
 
+    outlet
+    {
+        type            prghPressure;
+        p               $internalField;
+        value           $internalField;
+    }
 
-// ************************************************************************* //
+    walls
+    {
+        type            fixedFluxPressure;
+        value           $internalField;
+    }
+
+    frontAndBackPlanes
+    {
+        type            empty;
+    }
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
