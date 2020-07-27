@@ -16,7 +16,9 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (0 0 0);
+initialSpeed 1.4; //metres/sec
+
+internalField   uniform (0 $initialSpeed 0);
 
 boundaryField
 {
@@ -56,7 +58,7 @@ boundaryField
         type            noSlip;
     }
 
-    frontAndBackPlanes
+    frontAndBack
     {
         type               empty;
     }

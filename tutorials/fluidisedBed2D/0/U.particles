@@ -53,7 +53,7 @@ boundaryField
         type             slip;
     }
 
-    frontAndBackPlanes
+    frontAndBack
     {
         type               empty;
     }

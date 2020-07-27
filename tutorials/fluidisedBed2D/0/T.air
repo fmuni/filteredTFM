@@ -20,7 +20,7 @@ internalField       uniform 600;
 
 boundaryField
 {
-    "inlet.*"
+    inlet
     {
         type               fixedValue;
         value              uniform 600;
@@ -39,7 +39,7 @@ boundaryField
         type               zeroGradient;
     }
 
-    frontAndBackPlanes
+    frontAndBack
     {
         type               empty;
     }

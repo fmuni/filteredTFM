@@ -25,11 +25,11 @@ regions
 (
     boxToCell
     {
-        box (-0.1335 0 0) (0.1335 0.9 0.1);
+        box (-0.1335 0 0) (0.1335 0.01 0.9);
         fieldValues
         (
-            volScalarFieldValue alpha.air 0.45
-            volScalarFieldValue alpha.particles 0.55
+            volScalarFieldValue alpha.air 0.25
+            volScalarFieldValue alpha.particles 0.65
         );
     }
 );

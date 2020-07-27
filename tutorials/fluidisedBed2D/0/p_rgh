@@ -20,7 +20,7 @@ internalField       uniform 0;
 
 boundaryField
 {
-    "inlet.*"
+    inlet
     {
         type            zeroGradient;
         value           $internalField;
@@ -39,7 +39,7 @@ boundaryField
         value           $internalField;
     }
 
-    frontAndBackPlanes
+    frontAndBack
     {
         type            empty;
     }

@@ -22,7 +22,7 @@ referenceLevel      1e-4;
 
 boundaryField
 {
-    "inlet.*"
+    inlet
     {
         type               fixedValue;
         value              uniform 1e-4;
@@ -38,7 +38,7 @@ boundaryField
         type               zeroGradient;
     }
 
-    frontAndBackPlanes
+    frontAndBack
     {
         type               empty;
     }
