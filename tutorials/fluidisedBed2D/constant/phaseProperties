@@ -41,7 +41,7 @@ particles
     {
         mesoScale
         {
-            type  SarkarMeso;
+            type   SarkarMeso;
         }
 
         frictional
@@ -76,7 +76,7 @@ air
     {
         mesoScale
         {
-            type  none; //SarkarMeso;
+            type  SarkarMeso;
         }
 
         microScale
@@ -127,10 +127,10 @@ equations
 dynamicParameters
 {
   //Speed up calculations with constant cell size
-  constantFilterSize;
+ // constantFilterSize;
 
   //Quantities used in correlations
-  referenceFilterSize            1e-4;
+  referenceFilterSize            1e-2;
 
   //Settling drag law for terminal velocity
   settlingDrag Stokes;

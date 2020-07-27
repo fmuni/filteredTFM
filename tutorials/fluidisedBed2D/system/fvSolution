@@ -25,7 +25,7 @@ solvers
         smoothLimiter   0.1;
 
         implicitPhasePressure yes;
-        solver          smoothSolver;
+        solver          GAMG;
         smoother        symGaussSeidel;
         tolerance       1e-9;
         relTol          0;
@@ -34,11 +34,12 @@ solvers
 
     p_rgh
     {
-        solver          PCG;
+        solver          GAMG;
+        smoother        GaussSeidel;
         preconditioner  DIC;
         tolerance       1e-08;
         relTol          1e-08;
-        maxIter         15;
+        maxIter         100;
     }
 
     p_rghFinal
@@ -49,7 +50,7 @@ solvers
 
     "U.*"
     {
-        solver          smoothSolver;
+        solver          GAMG;
         smoother        symGaussSeidel;
         tolerance       1e-5;
         relTol          0;
@@ -86,13 +87,27 @@ solvers
 
 PIMPLE
 {
-    nOuterCorrectors    3;
-    nCorrectors         1;
+    nOuterCorrectors    1;
+    nCorrectors         2;
     nNonOrthogonalCorrectors 0;
+    faceMomentum on;
+
+    outerCorrectorsResidualControl
+    {
+        p_rgh
+        {
+            tolerance 1e-5;
+            relTol 0;
+        }
+    }
 }
 
 relaxationFactors
 {
+    fields
+    {
+        p_rgh 0.95;
+    }
     equations
     {
         ".*"            1;

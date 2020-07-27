@@ -81,13 +81,23 @@ void SchneiderbauerFrictional::correct()
 
     //regulartization of P_s_f calculation
     //Warning, there is a TYPO in Eqn. 33 of Schneiderbauer et al.!!
-    scalar   X_reg = phase_.alphaMax()  - phase_[celli];
-             X_reg = X_reg * X_reg + small; //ensure value is small and positive
+    scalar   X_reg = phase_.alphaMax()  - phase_[celli] + small;
+    scalar sqrXreg = sqr(X_reg);
+    //ensure value is small and positive
 
     scalar   Y_reg = b_  * diam[celli] * Sr[celli];
              Y_reg = 4.0 * phase_.rho()[celli] * Y_reg * Y_reg + small; //ensure value is small and positive
 
-    pPrime()[celli] = regularizeExp( X_reg, Y_reg, pMax_)*Y_reg / X_reg;
+    //- Remember it is a derivative
+    pPrime()[celli] = 2.0/X_reg*Y_reg
+        *  (
+                regularizeExp( sqrXreg, Y_reg, pMax_) / sqrXreg
+                +
+                (1.0 - regularizeExp( sqrXreg, Y_reg, pMax_))
+            );
+    
+    //- But we also need p
+    scalar p = regularizeExp( sqrXreg, Y_reg, pMax_)*Y_reg / sqrXreg;
 
     //regulartization of MU_s_f calculation
     //We use here Eqn. 32 inserted in Eqn. 27 of Schneiderbauer et al.
@@ -96,10 +106,10 @@ void SchneiderbauerFrictional::correct()
     (
            2. * diam[celli] * Sr[celli]
           /
-          sqrt( pPrime()[celli] / phase_.rho()[celli] + small) //Need to add small here since pPrime can be zero!
+          sqrt( p / phase_.rho()[celli] + small) //Need to add small here since pPrime can be zero!
     );
 
-    //Avoid division by zery for small I_s! No regulartization needed here, since limit for small I_s is Mu_ist
+    //Avoid division by zero for small I_s! No regulartization needed here, since limit for small I_s is Mu_ist
     scalar mui
     (
         muSt_
@@ -114,8 +124,8 @@ void SchneiderbauerFrictional::correct()
     Y_reg =  b_ * diam[celli];
     Y_reg =  2.0 * mui * phase_.rho()[celli] * Y_reg * Y_reg * Sr[celli] + small;
 
-    nu()[celli] = regularizeExp(X_reg, Y_reg, muMax_)
-                     * Y_reg / X_reg / phase_.rho()[celli]; //must return the KINEMATIC viscosity!
+    nu()[celli] = regularizeExp(sqrXreg, Y_reg, muMax_)
+                     * Y_reg / sqrXreg / phase_.rho()[celli]; //must return the KINEMATIC viscosity!
 
     //    Info << "pPrime()[" << celli << "]: " << pPrime()[celli]
     //         << ", nu()[" << celli << "]: " << nu()[celli]

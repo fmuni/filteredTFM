@@ -126,12 +126,18 @@ namespace Foam
       );
 
 
-     //evaluate pressure
+     //evaluate pressure derivative
       pPrime()[celli] =  phase_.rho()[celli]*Cp
                         * pow(markers().filterSize(celli,DIMENSIONAL),17./7.)
                         * Sr[celli]*Sr[celli]
-                        * pow(fabs(phase_[celli]) +TOL,1.115)
-                        / deltaAlpha;
+                        *
+                        (
+                          // For some reason this term creates instability!
+                          // Like this, the derivative is incorrect
+                          //  1.115 * pow(phase_[celli]+TOL,0.115)
+                           pow(phase_[celli],1.115)/deltaAlpha 
+                        )
+                      /deltaAlpha;
 
       //evaluate viscosity
       nu()[celli] =  Cnu
@@ -199,9 +205,8 @@ namespace Foam
                         * pow(markers().filterSize(celli,DIMENSIONAL),19./7.)
                         * Sr[celli]*Sr[celli]
                         * (
-                              0.0661
-                            + 0.0164 * phiSolid
-                            - 0.194 * phiSolid * phiSolid
+                            - 0.0164 
+                            + 2.0* 0.194 * phiSolid 
                           );
 
       //evaluate viscosity

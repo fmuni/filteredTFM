@@ -93,13 +93,14 @@ void SarkarMicro::correct()
         );
 
 
-        //evaluate pressure
+        //evaluate pressure derivative
         pPrime()[celli] =  phase_.rho()()[celli]*0.01797
                         * markers().filterSize(celli,DIMENSIONAL)
                         * markers().filterSize(celli,DIMENSIONAL)
                         * Sr[celli]*Sr[celli]
-                        * pow(max(phase_[celli],0.),1.645)
-                        / deltaAlpha;
+                        * pow(max(phase_[celli],0.),0.544)
+                        * (phase_.alphaMax()*1.544 - 0.544*phase_[celli])
+                        / sqr(deltaAlpha);
 
         //evaluate viscosity
         nu()[celli] =  Cnu

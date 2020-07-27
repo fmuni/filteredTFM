@@ -42,8 +42,8 @@ divSchemes
 
 laplacianSchemes
 {
-    default     Gauss linear uncorrected;
-    bounded     Gauss linear uncorrected;
+    default     Gauss linear corrected;
+    bounded     Gauss linear corrected;
 }
 
 interpolationSchemes
@@ -53,8 +53,8 @@ interpolationSchemes
 
 snGradSchemes
 {
-    default     uncorrected;
-    bounded     uncorrected;
+    default     corrected;
+    bounded     corrected;
 }
 
 // ************************************************************************* //

@@ -20,19 +20,7 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    inlet.air
-    {
-        type              noSlip;
-    }
 
-    inlet.particles
-    {
-      //   type               interstitialInletVelocity;
-         type               fixedValue;
-        // inletVelocity      uniform (-0.01 0 0);
-       //  alpha              alpha.particles;
-         value              uniform ( -2.0 0 0);
-    }
     
     inlet
     {
@@ -41,11 +29,10 @@ boundaryField
 
     outlet
     {
-//        type               pressureInletOutletVelocity;
-        type               inletOutlet;
+        type               pressureInletOutletVelocity;
         value              $internalField;
         phi                phi.particles;
-        inletValue              $internalField;
+        inletValue         $internalField;
     }
 
     walls

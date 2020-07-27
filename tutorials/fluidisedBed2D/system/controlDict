@@ -21,15 +21,15 @@ startFrom       startTime;
 
 startTime       0;
 
-stopAt          writeNow;
+stopAt          endTime;
 
 endTime         30;
 
-deltaT          1e-2;
+deltaT          1e-4;
 
-writeControl    runTime;
+writeControl    adjustableRunTime;
 
-writeInterval   10;
+writeInterval   0.01;
 
 purgeWrite      0;
 
@@ -45,11 +45,11 @@ timePrecision   6;
 
 runTimeModifiable on;
 
-adjustTimeStep  no;
+adjustTimeStep  yes;
 
 maxCo           0.9;
 
-maxDeltaT       1e-05;
+maxDeltaT       0.1;
 
 functions
 {

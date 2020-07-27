@@ -82,13 +82,25 @@ namespace Foam
   forAll(SrStar,celli)
   {
     pPrime()[celli] =   scaleP*phase_.rho()[celli]
-                      * pow(phase_[celli] + TOL,x1_)
-                      * pow( (markers().filterSize(celli) - DFref_), x2_)
-                      *(
-                           x3_*pow(SrStar[celli]+ TOL,x4_)
-                         * pow( (markers().filterSize(celli) - DFref_), x5_)
-                         + x6_* pow(phase_[celli]+ TOL, x7_)
-                         / pow( phase_.alphaMax() - phase_[celli]+ TOL, x8_)
+                      * 
+                      (
+                         x1_*pow(phase_[celli] + TOL,x1_-1.0)
+                        * pow( (markers().filterSize(celli) - DFref_), x2_)
+                        *(
+                            x3_*pow(SrStar[celli]+ TOL,x4_)
+                          * pow( (markers().filterSize(celli) - DFref_), x5_)
+                          + x6_* pow(phase_[celli]+ TOL, x7_)
+                          / pow( phase_.alphaMax() - phase_[celli]+ TOL, x8_)
+                        )
+
+                        + x6_*pow(phase_[celli] + TOL,x1_)
+                        *
+                        (
+                          x7_*pow(phase_[celli]+ TOL, x7_-1.0)
+                          / pow( phase_.alphaMax() - phase_[celli]+ TOL, x8_)
+                          + x8_*pow(phase_[celli]+ TOL, x7_)
+                          / pow( phase_.alphaMax() - phase_[celli]+ TOL, x8_+1.0)
+                        )
                       );
 
   }
