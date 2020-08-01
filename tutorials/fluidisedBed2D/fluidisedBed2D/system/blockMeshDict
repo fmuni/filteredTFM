@@ -1,0 +1,121 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1;
+
+x1Min    -0.1335;
+x1Max    0.1335;
+x2Min    -0.3335;
+x2Max    0.3335;
+
+z1   2.5;
+z2   2.9;
+z3   4.2;
+
+yD 0.1335;
+
+vertices
+(
+
+    ($x1Min 0 0)
+    ($x1Max 0 0)
+    ($x1Max $yD 0)
+    ($x1Min $yD 0)
+    ($x1Min 0 $z1)
+    ($x1Max 0 $z1)
+    ($x1Max $yD $z1)
+    ($x1Min $yD $z1)
+    ($x2Min 0 $z2)
+    ($x2Max 0 $z2)
+    ($x2Max $yD $z2)
+    ($x2Min $yD $z2)
+    ($x2Min 0 $z3)
+    ($x2Max 0 $z3)
+    ($x2Max $yD $z3)
+    ($x2Min $yD $z3)
+
+);
+
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) //fluidisedBed
+    (13 6 125)
+    simpleGrading (1 1 1)
+
+    hex (4 5 6 7 8 9 10 11) //freeboardLower
+    (13 6 20)
+    simpleGrading (1 1 1)
+
+    hex (8 9 10 11 12 13 14 15) //freeboardUpper
+    (13 6 62)
+    simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 3 2 1)
+        );
+    }
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (12 13 14 15)
+        );
+    }
+    walls
+    {
+        type wall;
+        faces
+        (
+            (1 2 6 5)
+            (0 4 7 3)
+            (5 6 10 9)
+            (7 4 8 11)
+            (8 12 15 11)
+            (9 10 14 13)
+        );
+    }
+
+    frontAndBack
+    {
+        type wall;
+        faces
+        (
+
+            (6 2 3 7)
+            (0 1 5 4)
+            (10 6 7 11)
+            (4 5 9 8)
+            (12 8 9 13)
+            (11 15 14 10)
+        );
+    }
+
+);
+
+// ************************************************************************* //
